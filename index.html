@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Directory listing for /</title>
+<style>
+body {
+  background: #111;
+  color: white;
+  font-family: serif;
+}
+a { color: #8ab4ff; }
+</style>
+</head>
+<body>
+<h1>Directory listing for /</h1>
+<hr>
+<ul id="files"></ul>
+<hr>
+<script>
+const files = [
+"1.txt","2.txt","3.txt","4.txt","5.txt",
+"6.txt","7.txt","8.txt","9.txt","10.txt",
+"11.txt","12.txt","13.txt","14.txt","15.txt",
+"16.txt","17.txt","18.txt","19.txt","20.txt",
+"21.txt","22.txt","23.txt","24.txt","25.txt",
+"28.txt","29.txt","30.txt","31.txt","32.txt",
+"33.txt","34.txt","35.txt"
+];
+
+const list = document.getElementById("files");
+files.forEach(file => {
+  const li = document.createElement("li");
+  const a = document.createElement("a");
+  a.href = encodeURIComponent(file);
+  a.textContent = file;
+  li.appendChild(a);
+  list.appendChild(li);
+});
+</script>
+</body>
+</html>
