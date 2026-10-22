@@ -1,0 +1,126 @@
+
+import java.net.*;
+import java.io.*;
+
+public class Server {
+    public static void main(String[] args) {
+        try {
+            ServerSocket ss = new ServerSocket(5000);
+            System.out.println("Food Server Started...");
+            System.out.println("Waiting for client...");
+
+            Socket s = ss.accept();
+            System.out.println("Client connected!");
+
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(s.getInputStream()));
+
+            PrintWriter out = new PrintWriter(
+                s.getOutputStream(), true);
+
+            String enquiry = in.readLine();
+            System.out.println("Customer Enquiry: " + enquiry);
+
+            if (enquiry.toLowerCase().contains("pizza")) {
+                out.println("Pizza is available. Price: Rs.250.");
+            } else if (enquiry.toLowerCase().contains("burger")) {
+                out.println("Burger is available. Price: Rs.120.");
+            } else if (enquiry.toLowerCase().contains("sandwich")) {
+                out.println("Sandwich is available. Price: Rs.100.");
+            } else {
+                out.println("Sorry, this food item is not available.");
+            }
+
+            in.close();
+            out.close();
+            s.close();
+            ss.close();
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
+
+
+
+
+
+
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+
+public class Client {
+    public static void main(String[] args) {
+        try {
+            Socket s = new Socket("localhost", 5000);
+
+            BufferedReader in = new BufferedReader(
+                new InputStreamReader(s.getInputStream()));
+
+            PrintWriter out = new PrintWriter(
+                s.getOutputStream(), true);
+
+            Scanner sc = new Scanner(System.in);
+
+            System.out.print("Enter food enquiry: ");
+            String enquiry = sc.nextLine();
+
+            out.println(enquiry);
+
+            String response = in.readLine();
+            System.out.println("Server Response: " + response);
+
+            in.close();
+            out.close();
+            sc.close();
+            s.close();
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
+
+
+
+
+
+## Theory: Online Food Ordering Enquiry System Using Socket Programming
+
+1\. This program develops a client-server application in Java to check the availability and price of food items using Socket Programming.
+
+2\. The `ServerSocket` class creates a server on port number `5000` and waits for client connections.
+
+3\. The `Socket` class establishes a connection between the client and the server.
+
+4\. The `accept()` method waits until a client connects to the server.
+
+5\. The `BufferedReader` class receives and reads the customer's enquiry using the `readLine()` method.
+
+6\. The `PrintWriter` class sends messages and responses between the client and the server using the `println()` method.
+
+7\. The `Scanner` class accepts the food enquiry from the user through keyboard input.
+
+8\. The client connects to the server using `new Socket("localhost", 5000)`.
+
+9\. The client sends the food enquiry, such as pizza, burger, or sandwich, to the server.
+
+10\. The server receives and displays the customer's enquiry.
+
+11\. The `toLowerCase()` method converts the enquiry into lowercase, and the `contains()` method checks which food item the customer requested.
+
+12\. The server uses `if-else if-else` statements to check food availability and return the corresponding price.
+
+13\. If pizza is requested, the server replies with a price of Rs. 250; burger costs Rs. 120, and sandwich costs Rs. 100.
+
+14\. If the requested food item is not recognized, the server sends a message stating that the item is unavailable.
+
+15\. The client receives and displays the server's response.
+
+16\. The `try-catch` block handles exceptions that may occur during network communication.
+
+17\. The `close()` method closes the input stream, output stream, socket, and server socket after communication is completed.
+
+Conclusion: This program demonstrates client-server communication using Java Socket Programming to receive food enquiries and provide food availability and price information.

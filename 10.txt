@@ -1,0 +1,100 @@
+
+interface Vehicle {
+    void start();
+    void stop();
+
+    default void showInfo() {
+        System.out.println("This is a vehicle.");
+    }
+}
+
+interface ElectricVehicle extends Vehicle {
+    void chargeBattery();
+}
+
+class Car implements Vehicle {
+    public void start() {
+        System.out.println("Car started");
+    }
+
+    public void stop() {
+        System.out.println("Car stopped");
+    }
+
+    @Override
+    public void showInfo() {
+        System.out.println("This is a petrol car.");
+    }
+}
+
+class ElectricCar implements ElectricVehicle {
+    public void start() {
+        System.out.println("Electric car started");
+    }
+
+    public void stop() {
+        System.out.println("Electric car stopped");
+    }
+
+    public void chargeBattery() {
+        System.out.println("Electric car battery is charging.");
+    }
+}
+
+public class VehicleManagement {
+    public static void main(String[] args) {
+
+        Vehicle[] vehicles = {
+            new Car(),
+            new ElectricCar()
+        };
+
+        for (Vehicle v : vehicles) {
+            System.out.println("\n------------------");
+
+            v.showInfo();
+            v.start();
+            v.stop();
+
+            if (v instanceof ElectricVehicle) {
+                ElectricVehicle ev = (ElectricVehicle) v;
+                ev.chargeBattery();
+            }
+        }
+    }
+}
+
+
+
+
+## Theory: Vehicle Management System Using Interface Inheritance in Java
+
+1\. Aim: To develop a Vehicle Management System using interfaces, interface inheritance, and default methods in Java.
+
+2\. Vehicle Interface: Defines the abstract methods `start()` and `stop()` and a default method `showInfo()`.
+
+3\. Default Method: The `showInfo()` method provides a default implementation that can be used or overridden by implementing classes.
+
+4\. ElectricVehicle Interface: Extends the `Vehicle` interface and declares an additional method, `chargeBattery()`.
+
+5\. Car Class: Implements the `Vehicle` interface and provides implementations for starting, stopping, and displaying petrol car information.
+
+6\. ElectricCar Class: Implements the `ElectricVehicle` interface and provides implementations for starting, stopping, and charging the electric car.
+
+7\. Interface Inheritance: The `extends` keyword allows `ElectricVehicle` to inherit the methods of `Vehicle`.
+
+8\. Interface Implementation: The `implements` keyword is used by classes to implement interface methods.
+
+9\. Method Overriding: The `Car` class overrides the default `showInfo()` method to display petrol car information.
+
+10\. Array of Objects: A `Vehicle` array stores objects of `Car` and `ElectricCar`.
+
+11\. Runtime Polymorphism: A `Vehicle` reference calls the appropriate methods for each object at runtime.
+
+12\. `instanceof` Operator: Checks whether a vehicle object implements the `ElectricVehicle` interface.
+
+13\. Type Casting: Converts a `Vehicle` reference into an `ElectricVehicle` reference to call the `chargeBattery()` method.
+
+14\. Enhanced For Loop: Iterates through all vehicle objects and performs the required operations.
+
+15\. Conclusion: The program demonstrates interfaces, interface inheritance, default methods, method overriding, runtime polymorphism, and type casting in Java.

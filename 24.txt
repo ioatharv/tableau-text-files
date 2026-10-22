@@ -1,0 +1,346 @@
+CREATE DATABASE IF NOT EXISTS hospital;
+USE hospital;
+
+CREATE TABLE IF NOT EXISTS patient (
+    id INT PRIMARY KEY,
+    name VARCHAR(50),
+    age INT,
+    gender VARCHAR(10),
+    disease VARCHAR(100),
+    appointment DATE
+);
+
+
+
+ALTER TABLE patient
+MODIFY appointment DATE NULL;
+
+
+
+
+public class Patient {
+    int id;
+    String name;
+    int age;
+    String gender;
+    String disease;
+    String appointment;
+
+    public Patient(int id, String name, int age,
+                   String gender, String disease,
+                   String appointment) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.disease = disease;
+        this.appointment = appointment;
+    }
+}
+
+
+
+
+
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
+public class HospitalDAO {
+
+    private final String url =
+        "jdbc:mysql://localhost:3306/hospital";
+    private final String user = "root";
+    private final String password = "YOUR_PASSWORD";
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, user, password);
+    }
+
+    // 1. Register patient
+    public void registerPatient(Patient p) {
+        String sql = "INSERT INTO patient " +
+            "(id, name, age, gender, disease, appointment) " +
+            "VALUES (?, ?, ?, ?, ?, NULL)";
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, p.id);
+            ps.setString(2, p.name);
+            ps.setInt(3, p.age);
+            ps.setString(4, p.gender);
+            ps.setString(5, p.disease);
+
+            int rows = ps.executeUpdate();
+            System.out.println("Affected rows: " + rows);
+            System.out.println("Patient registered successfully!");
+
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
+        }
+    }
+
+    // 2. Book appointment
+    public void bookAppointment(int id, String date) {
+        try {
+            // Validate date format and actual date
+            LocalDate appointmentDate = LocalDate.parse(date);
+
+            if (appointmentDate.isBefore(LocalDate.now())) {
+                System.out.println("Invalid date: Past date not allowed!");
+                return;
+            }
+
+            try (Connection con = getConnection()) {
+
+                // First check whether patient exists
+                String check = "SELECT id FROM patient WHERE id = ?";
+
+                try (PreparedStatement ps =
+                         con.prepareStatement(check)) {
+                    ps.setInt(1, id);
+
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (!rs.next()) {
+                            System.out.println("Invalid patient ID!");
+                            return;
+                        }
+                    }
+                }
+
+                // Update appointment date
+                String sql =
+                    "UPDATE patient SET appointment = ? WHERE id = ?";
+
+                try (PreparedStatement ps =
+                         con.prepareStatement(sql)) {
+                    ps.setDate(1, Date.valueOf(appointmentDate));
+                    ps.setInt(2, id);
+
+                    int rows = ps.executeUpdate();
+                    System.out.println("Affected rows: " + rows);
+
+                    if (rows > 0)
+                        System.out.println("Appointment booked!");
+                    else
+                        System.out.println("Appointment not booked.");
+                }
+            }
+
+        } catch (DateTimeParseException e) {
+            System.out.println(
+                "Invalid date! Enter date in YYYY-MM-DD format."
+            );
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
+        }
+    }
+
+    // 3. Display patients having appointments
+    public void displayAppointments() {
+        String sql =
+            "SELECT * FROM patient WHERE appointment IS NOT NULL";
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            boolean found = false;
+
+            while (rs.next()) {
+                found = true;
+                System.out.println("Patient ID: " + rs.getInt("id"));
+                System.out.println("Name: " + rs.getString("name"));
+                System.out.println("Age: " + rs.getInt("age"));
+                System.out.println("Disease: " + rs.getString("disease"));
+                System.out.println(
+                    "Appointment: " + rs.getDate("appointment")
+                );
+                System.out.println("-------------------------");
+            }
+
+            if (!found) {
+                System.out.println("No appointments found.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
+        }
+    }
+
+    // 4. Cancel appointment
+    public void cancelAppointment(int id) {
+        String sql =
+            "UPDATE patient SET appointment = NULL " +
+            "WHERE id = ? AND appointment IS NOT NULL";
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            int rows = ps.executeUpdate();
+            System.out.println("Affected rows: " + rows);
+
+            if (rows > 0) {
+                System.out.println("Appointment cancelled!");
+            } else {
+                System.out.println(
+                    "Patient not found or no appointment exists."
+                );
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
+        }
+    }
+}
+
+
+
+
+import java.util.Scanner;
+
+public class HospitalManagement {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        HospitalDAO dao = new HospitalDAO();
+
+        int choice;
+
+        do {
+            System.out.println("\n=== HOSPITAL APPOINTMENT SYSTEM ===");
+            System.out.println("1. Register Patient");
+            System.out.println("2. Book Appointment");
+            System.out.println("3. Display Appointments");
+            System.out.println("4. Cancel Appointment");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice: ");
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Patient ID: ");
+                    int id = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Enter Name: ");
+                    String name = sc.nextLine();
+
+                    System.out.print("Enter Age: ");
+                    int age = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Enter Gender: ");
+                    String gender = sc.nextLine();
+
+                    System.out.print("Enter Disease: ");
+                    String disease = sc.nextLine();
+
+                    if (id <= 0 || age < 0 ||
+                        name.trim().isEmpty() ||
+                        gender.trim().isEmpty() ||
+                        disease.trim().isEmpty()) {
+                        System.out.println("Invalid patient details!");
+                        break;
+                    }
+
+                    Patient p = new Patient(
+                        id, name, age, gender, disease, null
+                    );
+
+                    dao.registerPatient(p);
+                    break;
+
+                case 2:
+                    System.out.print("Enter Patient ID: ");
+                    id = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print(
+                        "Enter Appointment Date (YYYY-MM-DD): "
+                    );
+                    String date = sc.nextLine();
+
+                    if (id <= 0) {
+                        System.out.println("Invalid patient ID!");
+                    } else {
+                        dao.bookAppointment(id, date);
+                    }
+                    break;
+
+                case 3:
+                    dao.displayAppointments();
+                    break;
+
+                case 4:
+                    System.out.print("Enter Patient ID: ");
+                    id = sc.nextInt();
+
+                    if (id <= 0) {
+                        System.out.println("Invalid patient ID!");
+                    } else {
+                        dao.cancelAppointment(id);
+                    }
+                    break;
+
+                case 5:
+                    System.out.println("Thank you! Exiting...");
+                    break;
+
+                default:
+                    System.out.println("Invalid menu choice!");
+            }
+
+        } while (choice != 5);
+
+        sc.close();
+    }
+}
+
+
+
+
+
+## Theory: Hospital Appointment Management System Using JDBC
+
+1\. Aim: To develop a Hospital Appointment Management System using Java, JDBC, and MySQL.
+
+2\. Database: Creates a MySQL database named `hospital` to store patient records.
+
+3\. Patient Table: Stores patient ID, name, age, gender, disease, and appointment date.
+
+4\. Patient Class: Represents a patient and stores patient details using instance variables.
+
+5\. DAO Class: The `HospitalDAO` class performs database operations such as registering patients, booking appointments, displaying appointments, and cancelling appointments.
+
+6\. JDBC Connectivity: JDBC connects the Java application to the MySQL database.
+
+7\. Register Patient: Accepts patient details and inserts a new patient record into the database.
+
+8\. PreparedStatement: Executes parameterized SQL queries to insert, retrieve, and update patient records securely.
+
+9\. Book Appointment: Validates the appointment date, checks whether the patient exists, and updates the appointment date in the database.
+
+10\. Date Validation: The `LocalDate` class validates the date format and prevents booking appointments for past dates.
+
+11\. Display Appointments: Retrieves and displays patients whose appointment date is not `NULL`.
+
+12\. Cancel Appointment: Sets the appointment date to `NULL` for the specified patient.
+
+13\. ResultSet: Retrieves and processes records returned by SQL `SELECT` queries.
+
+14\. Exception Handling: Uses `try-catch` blocks to handle SQL errors and invalid date formats.
+
+15\. Resource Management: Uses try-with-resources to automatically close database connections, prepared statements, and result sets.
+
+16\. Input Validation: Checks patient ID, age, name, gender, disease, and appointment date before performing operations.
+
+17\. Menu-Driven Program: Uses a `do-while` loop and `switch` statement to repeat the menu until the user selects Exit.
+
+18\. Conclusion: The program demonstrates JDBC connectivity, MySQL database operations, CRUD-related updates, `PreparedStatement`, `ResultSet`, date validation, exception handling, and appointment management in Java.

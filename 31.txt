@@ -1,0 +1,200 @@
+CREATE DATABASE IF NOT EXISTS student_db;
+USE student_db;
+
+CREATE TABLE IF NOT EXISTS student (
+    prn VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    mobile VARCHAR(10) NOT NULL,
+    email VARCHAR(100) NOT NULL
+);
+
+
+
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class StudentRegistrationForm extends JFrame
+        implements ActionListener {
+
+    JTextField prnField, nameField, mobileField, emailField;
+    JButton submitButton, clearButton;
+
+    String url = "jdbc:mysql://localhost:3306/student_db";
+    String dbUser = "root";
+    String dbPassword = "YOUR_PASSWORD";
+
+    StudentRegistrationForm() {
+
+        setTitle("Student Registration Form");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new GridLayout(6, 2, 10, 10));
+
+        // Text fields
+        prnField = new JTextField();
+        nameField = new JTextField();
+        mobileField = new JTextField();
+        emailField = new JTextField();
+
+        // Add labels and fields
+        add(new JLabel("PRN:"));
+        add(prnField);
+
+        add(new JLabel("Name:"));
+        add(nameField);
+
+        add(new JLabel("Mobile Number:"));
+        add(mobileField);
+
+        add(new JLabel("Email Address:"));
+        add(emailField);
+
+        // Buttons
+        submitButton = new JButton("Submit");
+        clearButton = new JButton("Clear");
+
+        add(submitButton);
+        add(clearButton);
+
+        // ActionListener
+        submitButton.addActionListener(this);
+        clearButton.addActionListener(this);
+
+        setVisible(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == submitButton) {
+            insertStudent();
+        } else if (e.getSource() == clearButton) {
+            clearFields();
+        }
+    }
+
+    void insertStudent() {
+
+        String prn = prnField.getText().trim();
+        String name = nameField.getText().trim();
+        String mobile = mobileField.getText().trim();
+        String email = emailField.getText().trim();
+
+        // Validate mandatory fields
+        if (prn.isEmpty() || name.isEmpty()
+                || mobile.isEmpty() || email.isEmpty()) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Please fill all fields!");
+            return;
+        }
+
+        // Validate mobile number
+        if (!mobile.matches("[0-9]{10}")) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Mobile number must contain exactly 10 digits!");
+            return;
+        }
+
+        String sql = "INSERT INTO student "
+                + "(prn, name, mobile, email) VALUES (?, ?, ?, ?)";
+
+        try (Connection con = DriverManager.getConnection(
+                    url, dbUser, dbPassword);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, prn);
+            ps.setString(2, name);
+            ps.setString(3, mobile);
+            ps.setString(4, email);
+
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Student registered successfully!");
+
+                clearFields();
+            }
+
+        } catch (SQLIntegrityConstraintViolationException ex) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Duplicate PRN! Please enter a unique PRN.");
+
+        } catch (SQLException ex) {
+
+            if ("23000".equals(ex.getSQLState())) {
+                JOptionPane.showMessageDialog(this,
+                        "Duplicate PRN or database constraint violation!");
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Database Error: " + ex.getMessage());
+            }
+        }
+    }
+
+    void clearFields() {
+
+        prnField.setText("");
+        nameField.setText("");
+        mobileField.setText("");
+        emailField.setText("");
+
+        prnField.requestFocus();
+    }
+
+    public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(() -> {
+            new StudentRegistrationForm();
+        });
+    }
+}
+
+
+
+## Theory: Student Registration Form Using Java Swing and JDBC
+
+1\. This program creates a Student Registration Form using Java Swing and MySQL database connectivity.
+
+2\. The `student_db` database contains a `student` table to store PRN, name, mobile number, and email address.
+
+3\. The `JFrame` class creates the main application window.
+
+4\. The `JTextField` class accepts student details such as PRN, name, mobile number, and email address.
+
+5\. The `JLabel` class displays field names, and the `JButton` class creates Submit and Clear buttons.
+
+6\. The `GridLayout` class arranges the form components in rows and columns.
+
+7\. The `ActionListener` interface handles button-click events using the `actionPerformed()` method.
+
+8\. The `insertStudent()` method validates the input and inserts student details into the database.
+
+9\. The program checks that all fields are filled and that the mobile number contains exactly 10 digits using the regular expression `[0-9]{10}`.
+
+10\. The `DriverManager.getConnection()` method establishes a connection between Java and the MySQL database using JDBC.
+
+11\. The `PreparedStatement` interface executes the SQL `INSERT` query with parameters to insert student details securely.
+
+12\. The `executeUpdate()` method executes the INSERT query and returns the number of affected rows.
+
+13\. The program handles duplicate PRN values using `SQLIntegrityConstraintViolationException` and displays an appropriate error message.
+
+14\. The `SQLException` exception is handled to display database errors.
+
+15\. The `JOptionPane` class displays success messages, validation errors, and database error messages.
+
+16\. The `clearFields()` method clears all text fields and places the cursor in the PRN field.
+
+17\. The `try-with-resources` statement automatically closes database resources after use.
+
+18\. The `SwingUtilities.invokeLater()` method starts the Swing application on the Event Dispatch Thread.
+
+Conclusion: This program demonstrates how to create a graphical student registration form, validate student details, and store records in a MySQL database using Java Swing and JDBC.

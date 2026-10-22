@@ -1,0 +1,200 @@
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface ResultService extends Remote {
+    int calculateTotal(int[] marks) throws RemoteException;
+
+    double calculateAverage(int[] marks) throws RemoteException;
+
+    String calculateGrade(double average) throws RemoteException;
+}
+
+
+
+
+
+
+import java.rmi.*;
+import java.rmi.server.*;
+import java.rmi.registry.*;
+
+class ResultServiceImpl extends UnicastRemoteObject
+        implements ResultService {
+
+    public ResultServiceImpl() throws RemoteException {
+        super();
+    }
+
+    public int calculateTotal(int[] marks)
+            throws RemoteException {
+        validateMarks(marks);
+
+        int total = 0;
+        for (int m : marks) {
+            total += m;
+        }
+        return total;
+    }
+
+    public double calculateAverage(int[] marks)
+            throws RemoteException {
+        validateMarks(marks);
+
+        int total = 0;
+        for (int m : marks) {
+            total += m;
+        }
+        return (double) total / marks.length;
+    }
+
+    public String calculateGrade(double average)
+            throws RemoteException {
+        if (average < 0 || average > 100) {
+            throw new IllegalArgumentException("Invalid average");
+        }
+
+        if (average >= 90)
+            return "A+";
+        else if (average >= 75)
+            return "A";
+        else if (average >= 60)
+            return "B";
+        else if (average >= 40)
+            return "C";
+        else
+            return "Fail";
+    }
+
+    private void validateMarks(int[] marks) {
+        if (marks == null || marks.length == 0) {
+            throw new IllegalArgumentException(
+                "Marks cannot be empty");
+        }
+
+        for (int m : marks) {
+            if (m < 0 || m > 100) {
+                throw new IllegalArgumentException(
+                    "Marks must be between 0 and 100");
+            }
+        }
+    }
+}
+
+public class ResultServer {
+    public static void main(String[] args) {
+        try {
+            LocateRegistry.createRegistry(1099);
+
+            ResultService service = new ResultServiceImpl();
+
+            Naming.rebind(
+                "rmi://localhost:1099/ResultService", service);
+
+            System.out.println("Result Server is running...");
+        } catch (RemoteException e) {
+            System.out.println("Server Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
+
+
+
+
+
+
+
+import java.rmi.*;
+import java.util.Scanner;
+
+public class ResultClient {
+    public static void main(String[] args) {
+        try {
+            ResultService service = (ResultService)
+                Naming.lookup(
+                    "rmi://localhost:1099/ResultService");
+
+            Scanner sc = new Scanner(System.in);
+            int[] marks = new int[5];
+
+            System.out.println("Enter marks for 5 subjects:");
+
+            for (int i = 0; i < marks.length; i++) {
+                System.out.print("Subject " + (i + 1) + ": ");
+                marks[i] = sc.nextInt();
+
+                if (marks[i] < 0 || marks[i] > 100) {
+                    System.out.println(
+                        "Invalid marks! Enter marks from 0 to 100.");
+                    sc.close();
+                    return;
+                }
+            }
+
+            int total = service.calculateTotal(marks);
+            double average = service.calculateAverage(marks);
+            String grade = service.calculateGrade(average);
+
+            System.out.println("\n--- Student Result ---");
+            System.out.println("Total Marks: " + total + "/500");
+            System.out.printf("Average: %.2f%%%n", average);
+            System.out.println("Grade: " + grade);
+
+            sc.close();
+
+        } catch (NotBoundException e) {
+            System.out.println(
+                "Service not found. Start the server first.");
+        } catch (RemoteException e) {
+            System.out.println(
+                "Remote connection error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println(
+                "Invalid input or error: " + e.getMessage());
+        }
+    }
+}
+
+
+
+
+
+## Theory: Student Result Processing System Using Java RMI
+
+1\. This program develops a Student Result Processing System using Java Remote Method Invocation (RMI).
+
+2\. RMI allows a client to call methods of an object running on a remote server.
+
+3\. The `Remote` interface is used to define methods that can be called remotely.
+
+4\. The `ResultService` interface declares three remote methods: `calculateTotal()`, `calculateAverage()`, and `calculateGrade()`.
+
+5\. The `RemoteException` class handles errors that may occur during remote communication.
+
+6\. The `ResultServiceImpl` class implements the `ResultService` interface and extends `UnicastRemoteObject` to make its methods available remotely.
+
+7\. The `validateMarks()` method checks that the marks array is not empty and that every mark is between 0 and 100.
+
+8\. The `calculateTotal()` method calculates the total marks obtained in five subjects.
+
+9\. The `calculateAverage()` method calculates the average marks by dividing the total marks by the number of subjects.
+
+10\. The `calculateGrade()` method assigns a grade according to the average: A+ for 90 and above, A for 75 and above, B for 60 and above, C for 40 and above, and Fail below 40.
+
+11\. The `LocateRegistry.createRegistry(1099)` method starts the RMI Registry on port `1099`.
+
+12\. The `Naming.rebind()` method registers the remote service with the name `ResultService`.
+
+13\. The client uses `Naming.lookup()` to locate the registered remote service on the server.
+
+14\. The `Scanner` class accepts marks for five subjects from the user, and the client checks that each mark is between 0 and 100.
+
+15\. The client calls the remote methods to calculate total marks, average, and grade, then displays the result.
+
+16\. The `NotBoundException` handles the situation where the requested service is not registered in the RMI Registry.
+
+17\. The program uses exception handling to manage remote connection errors, invalid input, and other errors.
+
+Conclusion: This program demonstrates Java RMI by allowing a client to remotely calculate a student's total marks, average, and grade using methods provided by a server.

@@ -1,0 +1,269 @@
+
+import java.util.*;
+
+class Product {
+    int id;
+    String name, category;
+    double price;
+    int quantity;
+
+    Product(int id, String name, String category,
+            double price, int quantity) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    public String toString() {
+        return "ID: " + id +
+               ", Name: " + name +
+               ", Category: " + category +
+               ", Price: Rs." + price +
+               ", Quantity: " + quantity;
+    }
+}
+
+public class InventoryManagement {
+    static Scanner sc = new Scanner(System.in);
+    static ArrayList<Product> products = new ArrayList<>();
+
+    static Product search(int id) {
+        for (Product p : products) {
+            if (p.id == id) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    static void display() {
+        if (products.isEmpty()) {
+            System.out.println("Inventory is empty.");
+            return;
+        }
+
+        for (Product p : products) {
+            System.out.println(p);
+        }
+    }
+
+    public static void main(String[] args) {
+        int choice;
+
+        do {
+            System.out.println("\n--- INVENTORY MENU ---");
+            System.out.println("1. Add Product");
+            System.out.println("2. Search Product");
+            System.out.println("3. Update Price");
+            System.out.println("4. Update Quantity");
+            System.out.println("5. Products Below Reorder Level");
+            System.out.println("6. Total Inventory Value");
+            System.out.println("7. Sort by Quantity");
+            System.out.println("8. Display All Products");
+            System.out.println("9. Exit");
+            System.out.print("Enter choice: ");
+
+            choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Product ID: ");
+                    int id = sc.nextInt();
+
+                    if (search(id) != null) {
+                        System.out.println("Product ID already exists!");
+                        break;
+                    }
+
+                    sc.nextLine();
+                    System.out.print("Enter Product Name: ");
+                    String name = sc.nextLine();
+
+                    System.out.print("Enter Category: ");
+                    String category = sc.nextLine();
+
+                    System.out.print("Enter Price: ");
+                    double price = sc.nextDouble();
+
+                    System.out.print("Enter Quantity: ");
+                    int quantity = sc.nextInt();
+
+                    if (price <= 0 || quantity < 0) {
+                        System.out.println("Invalid price or quantity!");
+                        break;
+                    }
+
+                    products.add(new Product(
+                        id, name, category, price, quantity
+                    ));
+
+                    System.out.println("Product added successfully.");
+                    display();
+                    break;
+
+                case 2:
+                    System.out.print("Enter Product ID to search: ");
+                    id = sc.nextInt();
+
+                    Product p = search(id);
+
+                    if (p != null) {
+                        System.out.println("Product Found:");
+                        System.out.println(p);
+                    } else {
+                        System.out.println("Product does not exist.");
+                    }
+                    break;
+
+                case 3:
+                    System.out.print("Enter Product ID: ");
+                    id = sc.nextInt();
+
+                    p = search(id);
+
+                    if (p == null) {
+                        System.out.println("Product does not exist.");
+                        break;
+                    }
+
+                    System.out.print("Enter New Price: ");
+                    price = sc.nextDouble();
+
+                    if (price <= 0) {
+                        System.out.println("Price must be positive!");
+                    } else {
+                        p.price = price;
+                        System.out.println("Price updated successfully.");
+                    }
+
+                    display();
+                    break;
+
+                case 4:
+                    System.out.print("Enter Product ID: ");
+                    id = sc.nextInt();
+
+                    p = search(id);
+
+                    if (p == null) {
+                        System.out.println("Product does not exist.");
+                        break;
+                    }
+
+                    System.out.print("Enter New Quantity: ");
+                    quantity = sc.nextInt();
+
+                    if (quantity < 0) {
+                        System.out.println("Quantity cannot be negative!");
+                    } else {
+                        p.quantity = quantity;
+                        System.out.println("Quantity updated successfully.");
+                    }
+
+                    display();
+                    break;
+
+                case 5:
+                    System.out.print("Enter Reorder Level: ");
+                    int level = sc.nextInt();
+
+                    boolean found = false;
+
+                    System.out.println("\n--- Low Stock Products ---");
+
+                    for (Product item : products) {
+                        if (item.quantity < level) {
+                            System.out.println(item);
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("No products below reorder level.");
+                    }
+                    break;
+
+                case 6:
+                    double total = 0;
+
+                    for (Product item : products) {
+                        total += item.price * item.quantity;
+                    }
+
+                    System.out.println(
+                        "Total Inventory Value = Rs. " + total
+                    );
+                    break;
+
+                case 7:
+                    products.sort(
+                        (p1, p2) ->
+                            Integer.compare(p1.quantity, p2.quantity)
+                    );
+
+                    System.out.println(
+                        "\n--- Sorted by Quantity (Ascending) ---"
+                    );
+                    display();
+                    break;
+
+                case 8:
+                    System.out.println("\n--- All Products ---");
+                    display();
+                    break;
+
+                case 9:
+                    System.out.println("Program ended.");
+                    break;
+
+                default:
+                    System.out.println("Invalid menu choice!");
+            }
+
+        } while (choice != 9);
+
+        sc.close();
+    }
+}
+
+
+
+## Theory: Inventory Stock and Reorder Management Using Java
+
+1\. Aim: To develop a menu-driven Inventory Management System using Java and the `ArrayList` collection.
+
+2\. Product Class: Stores product ID, name, category, price, and quantity.
+
+3\. Parameterized Constructor: Initializes product details when a product object is created.
+
+4\. `toString()` Method: Displays product information in a readable format.
+
+5\. ArrayList: Stores product objects dynamically and allows products to be added, searched, updated, and sorted.
+
+6\. Add Product: Adds a new product after checking for duplicate IDs and validating price and quantity.
+
+7\. Search Product: Searches for a product using its ID and displays its details if found.
+
+8\. Update Price: Updates the price of an existing product after checking that the new price is positive.
+
+9\. Update Quantity: Updates the stock quantity after checking that it is non-negative.
+
+10\. Reorder Level: Displays products whose quantity is below the user-entered reorder level.
+
+11\. Total Inventory Value: Calculates the total value of all products using the formula:
+
+Total Inventory Value = Sum of (Price × Quantity)
+
+12\. Sorting: Sorts products by quantity in ascending order using a lambda expression and the `sort()` method.
+
+13\. Search Method: The `search()` method returns the matching product object or `null` if the product is not found.
+
+14\. Display Method: The `display()` method displays all products and shows a message if the inventory is empty.
+
+15\. Switch Statement and Do-While Loop: The `switch` statement performs the selected operation, while the `do-while` loop repeats the menu until the user selects Exit (option 9).
+
+16\. Input Validation: Checks duplicate product IDs, positive prices, non-negative quantities, and valid menu choices.
+
+17\. Conclusion: The program demonstrates classes, objects, constructors, `ArrayList`, searching, updating, sorting, lambda expressions, conditional statements, and inventory value calculation in Java.

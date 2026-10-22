@@ -1,0 +1,282 @@
+
+import java.util.Scanner;
+
+enum Year {
+    FY, SY, TY, BTech
+}
+
+class Student {
+    int prn;
+    String name, department, division;
+    Year year;
+    double percentage;
+
+    // Constructor
+    Student(int prn, String name, String department,
+            Year year, String division, double percentage) {
+        this.prn = prn;
+        this.name = name;
+        this.department = department;
+        this.year = year;
+        this.division = division;
+        this.percentage = percentage;
+    }
+
+    // Display student details
+    public String toString() {
+        return prn + "\t" + name + "\t" + department + "\t"
+                + year + "\t" + division + "\t" + percentage;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of students: ");
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        if (n <= 0) {
+            System.out.println("Number of students must be positive.");
+            sc.close();
+            return;
+        }
+
+        Student[] students = new Student[n];
+
+        // Input student details
+        for (int i = 0; i < n; i++) {
+            System.out.println("\nStudent " + (i + 1));
+
+            System.out.print("Enter PRN: ");
+            int prn = sc.nextInt();
+            sc.nextLine();
+
+            System.out.print("Enter Name: ");
+            String name = sc.nextLine();
+
+            System.out.print("Enter Department: ");
+            String department = sc.nextLine();
+
+            Year year;
+            while (true) {
+                System.out.print("Enter Year (FY/SY/TY/BTech): ");
+                String y = sc.nextLine().trim();
+
+                try {
+                    year = Year.valueOf(y);
+                    break;
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Invalid year! Try again.");
+                }
+            }
+
+            System.out.print("Enter Division: ");
+            String division = sc.nextLine();
+
+            double percentage;
+            while (true) {
+                System.out.print("Enter Percentage (0-100): ");
+                percentage = sc.nextDouble();
+                sc.nextLine();
+
+                if (percentage >= 0 && percentage <= 100) {
+                    break;
+                }
+                System.out.println("Invalid percentage! Enter 0 to 100.");
+            }
+
+            students[i] = new Student(prn, name, department,
+                                      year, division, percentage);
+        }
+
+        int choice;
+
+        do {
+            System.out.println("\n===== STUDENT PERFORMANCE MENU =====");
+            System.out.println("1. Display all students");
+            System.out.println("2. Search student by PRN");
+            System.out.println("3. Display students by year");
+            System.out.println("4. Average percentage by year");
+            System.out.println("5. Students above overall average");
+            System.out.println("6. Student with highest percentage");
+            System.out.println("7. Exit");
+            System.out.print("Enter choice: ");
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+
+                case 1:
+                    System.out.println("PRN\tName\tDepartment\tYear\tDivision\tPercentage");
+                    for (Student s : students) {
+                        System.out.println(s);
+                    }
+                    break;
+
+                case 2:
+                    System.out.print("Enter PRN to search: ");
+                    int searchPRN = sc.nextInt();
+                    boolean found = false;
+
+                    for (Student s : students) {
+                        if (s.prn == searchPRN) {
+                            System.out.println(s);
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+
+                case 3:
+                    System.out.print("Enter year (FY/SY/TY/BTech): ");
+                    Year selectedYear;
+
+                    try {
+                        selectedYear = Year.valueOf(sc.nextLine().trim());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid year!");
+                        break;
+                    }
+
+                    found = false;
+                    for (Student s : students) {
+                        if (s.year == selectedYear) {
+                            System.out.println(s);
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("No students in this year.");
+                    }
+                    break;
+
+                case 4:
+                    System.out.print("Enter year (FY/SY/TY/BTech): ");
+
+                    try {
+                        selectedYear = Year.valueOf(sc.nextLine().trim());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid year!");
+                        break;
+                    }
+
+                    double total = 0;
+                    int count = 0;
+
+                    for (Student s : students) {
+                        if (s.year == selectedYear) {
+                            total += s.percentage;
+                            count++;
+                        }
+                    }
+
+                    if (count > 0) {
+                        System.out.println("Average Percentage = "
+                                           + (total / count));
+                    } else {
+                        System.out.println("No students in this year.");
+                    }
+                    break;
+
+                case 5:
+                    double sum = 0;
+
+                    for (Student s : students) {
+                        sum += s.percentage;
+                    }
+
+                    double average = sum / n;
+                    System.out.println("Overall Average = " + average);
+                    System.out.println("Students above average:");
+
+                    found = false;
+                    for (Student s : students) {
+                        if (s.percentage > average) {
+                            System.out.println(s);
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("No students above average.");
+                    }
+                    break;
+
+                case 6:
+                    Student topper = students[0];
+
+                    for (Student s : students) {
+                        if (s.percentage > topper.percentage) {
+                            topper = s;
+                        }
+                    }
+
+                    System.out.println("Highest Percentage Student:");
+                    System.out.println(topper);
+                    break;
+
+                case 7:
+                    System.out.println("Program ended.");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice! Try again.");
+            }
+
+        } while (choice != 7);
+
+        sc.close();
+    }
+}
+
+
+
+## Theory: Student Performance Management System in Java
+
+1\. Aim: To develop a menu-driven Student Performance Management System using Java.
+
+2\. Enum: The `Year` enum defines four academic years: FY, SY, TY, and BTech.
+
+3\. Student Class: Stores student details such as PRN, name, department, year, division, and percentage.
+
+4\. Parameterized Constructor: Initializes all student attributes when an object is created.
+
+5\. `this` Keyword: Refers to the current object and assigns values to its instance variables.
+
+6\. `toString()` Method: Overrides the `toString()` method to display student details in a readable format.
+
+7\. Scanner Class: Accepts student details and menu choices from the user.
+
+8\. Array of Objects: A `Student` array stores the records of multiple students.
+
+9\. Input Validation: Validates the number of students, academic year, and percentage (0–100).
+
+10\. Display All Students: Displays the details of all students using an enhanced `for` loop.
+
+11\. Search by PRN: Searches for a student using their PRN and displays the record if found.
+
+12\. Year-Wise Search: Displays students belonging to a selected academic year.
+
+13\. Average Percentage by Year: Calculates the average percentage of students in a selected year.
+
+14\. Students Above Average: Calculates the overall class average and displays students whose percentages are higher than it.
+
+15\. Highest Percentage: Finds and displays the student with the highest percentage.
+
+16\. Switch Statement: Executes the selected operation based on the user's menu choice.
+
+17\. Do-While Loop: Repeats the menu until the user selects Exit (option 7).
+
+18\. Exception Handling: Uses `try-catch` to handle invalid academic year inputs.
+
+19\. Conditional Statements: The `if-else` statements validate inputs, search records, and compare percentages.
+
+20\. Conclusion: The program demonstrates enums, classes, objects, constructors, method overriding, arrays of objects, loops, exception handling, searching, and statistical calculations in Java.

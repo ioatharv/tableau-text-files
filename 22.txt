@@ -1,0 +1,271 @@
+
+import java.io.*;
+import java.util.Scanner;
+
+public class StudentRecord {
+    static Scanner sc = new Scanner(System.in);
+    static File file = new File("students.txt");
+
+    // Add student record
+    static void addStudent() {
+        try {
+            System.out.print("Enter PRN: ");
+            String prn = sc.nextLine().trim();
+
+            System.out.print("Enter Name: ");
+            String name = sc.nextLine().trim();
+
+            System.out.print("Enter Department: ");
+            String dept = sc.nextLine().trim();
+
+            System.out.print("Enter Percentage: ");
+            double percentage = Double.parseDouble(sc.nextLine());
+
+            // Validate input
+            if (prn.isEmpty() || name.isEmpty() || dept.isEmpty()
+                    || percentage < 0 || percentage > 100) {
+                System.out.println("Invalid student details!");
+                return;
+            }
+
+            // Check duplicate PRN
+            if (findStudent(prn)) {
+                System.out.println("PRN already exists!");
+                return;
+            }
+
+            // Append record without deleting old records
+            FileWriter fw = new FileWriter(file, true);
+            fw.write(prn + "," + name + "," + dept + ","
+                    + percentage + "\n");
+            fw.close();
+
+            System.out.println("Student added successfully.");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Percentage must be a number.");
+        } catch (IOException e) {
+            System.out.println("File error: " + e.getMessage());
+        }
+    }
+
+    // Search student by PRN
+    static boolean findStudent(String prn) throws IOException {
+        if (!file.exists()) {
+            return false;
+        }
+
+        BufferedReader br = new BufferedReader(
+                new FileReader(file));
+
+        String line;
+
+        while ((line = br.readLine()) != null) {
+            String[] data = line.split(",", -1);
+
+            if (data.length == 4 && data[0].equals(prn)) {
+                br.close();
+                return true;
+            }
+        }
+
+        br.close();
+        return false;
+    }
+
+    // Display all students
+    static void displayStudents() {
+        try {
+            if (!file.exists()) {
+                System.out.println("No student records found.");
+                return;
+            }
+
+            BufferedReader br = new BufferedReader(
+                    new FileReader(file));
+
+            String line;
+            System.out.println("\nPRN, Name, Department, Percentage");
+
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            br.close();
+
+        } catch (IOException e) {
+            System.out.println("File error: " + e.getMessage());
+        }
+    }
+
+    // Search and display student
+    static void searchStudent() {
+        try {
+            System.out.print("Enter PRN to search: ");
+            String prn = sc.nextLine().trim();
+
+            if (!file.exists()) {
+                System.out.println("No records found.");
+                return;
+            }
+
+            BufferedReader br = new BufferedReader(
+                    new FileReader(file));
+
+            String line;
+            boolean found = false;
+
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",", -1);
+
+                if (data.length == 4 && data[0].equals(prn)) {
+                    System.out.println("Student Found:");
+                    System.out.println("PRN: " + data[0]);
+                    System.out.println("Name: " + data[1]);
+                    System.out.println("Department: " + data[2]);
+                    System.out.println("Percentage: " + data[3]);
+                    found = true;
+                    break;
+                }
+            }
+
+            br.close();
+
+            if (!found) {
+                System.out.println("Student not found.");
+            }
+
+        } catch (IOException e) {
+            System.out.println("File error: " + e.getMessage());
+        }
+    }
+
+    // Count records and calculate average
+    static void statistics() {
+        try {
+            if (!file.exists()) {
+                System.out.println("No student records found.");
+                return;
+            }
+
+            BufferedReader br = new BufferedReader(
+                    new FileReader(file));
+
+            String line;
+            int count = 0;
+            double total = 0;
+
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",", -1);
+
+                if (data.length == 4) {
+                    try {
+                        double percentage =
+                                Double.parseDouble(data[3]);
+
+                        count++;
+                        total += percentage;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Skipping invalid record.");
+                    }
+                }
+            }
+
+            br.close();
+
+            System.out.println("Total Records: " + count);
+
+            if (count > 0) {
+                System.out.println("Average Percentage: "
+                        + (total / count));
+            } else {
+                System.out.println("No valid records.");
+            }
+
+        } catch (IOException e) {
+            System.out.println("File error: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        int choice;
+
+        do {
+            System.out.println("\n--- Student Record Menu ---");
+            System.out.println("1. Add Student");
+            System.out.println("2. Display All Students");
+            System.out.println("3. Search Student by PRN");
+            System.out.println("4. Count Records and Average");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice: ");
+
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+
+                switch (choice) {
+                    case 1:
+                        addStudent();
+                        break;
+                    case 2:
+                        displayStudents();
+                        break;
+                    case 3:
+                        searchStudent();
+                        break;
+                    case 4:
+                        statistics();
+                        break;
+                    case 5:
+                        System.out.println("Program ended.");
+                        break;
+                    default:
+                        System.out.println("Invalid choice!");
+                }
+            } catch (NumberFormatException e) {
+                choice = 0;
+                System.out.println("Enter a valid menu number.");
+            }
+
+        } while (choice != 5);
+
+        sc.close();
+    }
+}
+
+
+
+
+
+## Theory: File-Based Student Record Management System in Java
+
+1\. Aim: To develop a menu-driven Student Record Management System using file handling in Java.
+
+2\. Scanner Class: Accepts student details and menu choices from the user.
+
+3\. File Class: Represents the `students.txt` file used to store student records.
+
+4\. Add Student: Accepts PRN, name, department, and percentage from the user.
+
+5\. Input Validation: Checks that PRN, name, and department are not empty and that percentage is between 0 and 100.
+
+6\. Duplicate PRN Check: The `findStudent()` method checks whether the entered PRN already exists in the file.
+
+7\. FileWriter: Writes student records to the file in append mode without deleting existing records.
+
+8\. Record Format: Each student record is stored in comma-separated format: PRN, name, department, and percentage.
+
+9\. Display Students: The `displayStudents()` method reads and displays all student records from the file.
+
+10\. Search Student: The `searchStudent()` method searches for a student using PRN and displays the complete record if found.
+
+11\. BufferedReader: Reads student records line by line using the `readLine()` method.
+
+12\. String Split: The `split(",", -1)` method separates each record into fields using commas.
+
+13\. Record Statistics: The `statistics()` method counts valid student records and calculates the average percentage.
+
+14\. Exception Handling: `try-catch` blocks handle file errors, invalid numeric inputs, and invalid percentage values.
+
+15\. Switch Statement and Do-While Loop: The `switch` statement performs the selected operation, while the `do-while` loop repeats the menu until the user selects Exit (option 5).
+
+16\. Conclusion: The program demonstrates file handling, reading, writing, appending, searching, input validation, exception handling, record counting, and average calculation in Java.

@@ -1,0 +1,107 @@
+
+import java.io.*;
+import java.util.Scanner;
+
+public class FileAppendAnalysis {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+        File file = new File("data.txt");
+
+        try {
+            // Create file if it does not exist
+            if (file.createNewFile()) {
+                System.out.println("File created successfully.");
+            } else {
+                System.out.println("File already exists.");
+            }
+
+            // Write text by appending
+            FileWriter fw = new FileWriter(file, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            System.out.println("Enter text to write/append:");
+            String text = sc.nextLine();
+
+            bw.write(text);
+            bw.newLine();
+            bw.close();
+
+            System.out.println("Text saved successfully.");
+
+            // Read entire file
+            BufferedReader br = new BufferedReader(
+                    new FileReader(file));
+
+            String line;
+            int lines = 0;
+            int words = 0;
+            int characters = 0;
+
+            System.out.println("\nFile Contents:");
+
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+
+                lines++;
+                characters += line.length();
+
+                String trimmed = line.trim();
+
+                if (!trimmed.isEmpty()) {
+                    words += trimmed.split("\\s+").length;
+                }
+            }
+
+            br.close();
+
+            // Display analysis
+            System.out.println("\nText Analysis:");
+            System.out.println("Total Lines: " + lines);
+            System.out.println("Total Words: " + words);
+            System.out.println("Total Characters: " + characters);
+
+        } catch (IOException e) {
+            System.out.println("File error: " + e.getMessage());
+        }
+
+        sc.close();
+    }
+}
+
+
+
+
+## Theory: File Append and Text Analysis in Java
+
+1\. Aim: To develop a Java program to append text to a file and analyze its contents.
+
+2\. File Class: Represents the file `data.txt` and checks whether it already exists.
+
+3\. File Creation: The `createNewFile()` method creates the file if it does not exist.
+
+4\. Scanner Class: Accepts text input from the user.
+
+5\. FileWriter: Writes text to a file. The `true` parameter enables append mode, preserving existing content.
+
+6\. BufferedWriter: Writes text efficiently using the `write()` and `newLine()` methods.
+
+7\. Appending Data: The program adds the entered text to the end of the file without deleting previous content.
+
+8\. FileReader: Reads character data from the file.
+
+9\. BufferedReader: Reads the file line by line using the `readLine()` method.
+
+10\. Line Count: Counts the total number of lines by incrementing the counter for each line read.
+
+11\. Word Count: Uses `trim()` and `split("\\s+")` to count words separated by whitespace.
+
+12\. Character Count: Uses the `length()` method to calculate the total number of characters in the lines, excluding newline characters.
+
+13\. Text Display: Displays the complete file contents before showing the analysis.
+
+14\. Exception Handling: The `try-catch` block handles file-related errors using `IOException`.
+
+15\. Resource Closing: The `close()` method closes the writer, reader, and scanner after use.
+
+16\. Conclusion: The program demonstrates file creation, appending, reading, text analysis, word counting, line counting, character counting, and exception handling in Java.

@@ -1,0 +1,156 @@
+
+import java.util.Scanner;
+
+class LibraryInventory {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int[] id = {101, 102, 103, 104, 105};
+        String[] title = {"Java", "Python", "C++", "DBMS", "DSA"};
+        int[] quantity = {5, 10, 7, 8, 6};
+
+        int count = 5;
+        int choice, bookId, index;
+
+        do {
+            System.out.println("\n===== LIBRARY INVENTORY =====");
+            System.out.println("1. Search Book");
+            System.out.println("2. Delete Book");
+            System.out.println("3. Update Quantity");
+            System.out.println("4. Display All Books");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice: ");
+            choice = sc.nextInt();
+
+            switch (choice) {
+
+                case 1:
+                    System.out.print("Enter Book ID: ");
+                    bookId = sc.nextInt();
+
+                    index = -1;
+                    for (int i = 0; i < count; i++) {
+                        if (id[i] == bookId) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index == -1) {
+                        System.out.println("Book not found!");
+                    } else {
+                        System.out.println("ID: " + id[index]);
+                        System.out.println("Title: " + title[index]);
+                        System.out.println("Quantity: " + quantity[index]);
+                    }
+                    break;
+
+                case 2:
+                    System.out.print("Enter Book ID to delete: ");
+                    bookId = sc.nextInt();
+
+                    index = -1;
+                    for (int i = 0; i < count; i++) {
+                        if (id[i] == bookId) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index == -1) {
+                        System.out.println("Book not found!");
+                    } else {
+                        for (int i = index; i < count - 1; i++) {
+                            id[i] = id[i + 1];
+                            title[i] = title[i + 1];
+                            quantity[i] = quantity[i + 1];
+                        }
+
+                        count--;
+                        System.out.println("Book deleted successfully!");
+                    }
+                    break;
+
+                case 3:
+                    System.out.print("Enter Book ID to update: ");
+                    bookId = sc.nextInt();
+
+                    index = -1;
+                    for (int i = 0; i < count; i++) {
+                        if (id[i] == bookId) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index == -1) {
+                        System.out.println("Book not found!");
+                    } else {
+                        System.out.print("Enter new quantity: ");
+                        int newQuantity = sc.nextInt();
+
+                        if (newQuantity < 0) {
+                            System.out.println("Invalid quantity!");
+                        } else {
+                            quantity[index] = newQuantity;
+                            System.out.println("Quantity updated!");
+                        }
+                    }
+                    break;
+
+                case 4:
+                    System.out.println("\nID\tTitle\tQuantity");
+
+                    for (int i = 0; i < count; i++) {
+                        System.out.println(id[i] + "\t"
+                                + title[i] + "\t"
+                                + quantity[i]);
+                    }
+                    break;
+
+                case 5:
+                    System.out.println("Exiting program...");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+
+        } while (choice != 5);
+
+        sc.close();
+    }
+}
+
+
+## Theory: Library Inventory Management System (Points)
+
+1\. Aim: To develop a menu-driven Library Inventory Management System using Java.
+
+2\. Programming Language: Java.
+
+3\. Scanner Class: Used to accept input from the user.
+
+4\. Arrays: Three arrays are used to store Book ID, book title, and quantity.
+
+5\. Initial Records: The program contains five books with predefined IDs, titles, and quantities.
+
+6\. Search Book: Searches for a book using its ID and displays its details.
+
+7\. Delete Book: Deletes a book by shifting the remaining array elements to the left and decreasing the count.
+
+8\. Update Quantity: Updates the quantity of an existing book after validating that the new quantity is non-negative.
+
+9\. Display Books: Displays all book records with their IDs, titles, and quantities.
+
+10\. Switch Statement: Executes the operation selected by the user from the menu.
+
+11\. Do-While Loop: Repeats the menu until the user selects Exit (option 5).
+
+12\. For Loop: Used to search for books, display records, and shift array elements during deletion.
+
+13\. Conditional Statements: Used to check whether a book exists and whether the entered quantity is valid.
+
+14\. Error Handling: Displays appropriate messages for books that are not found, invalid quantities, and invalid menu choices.
+
+15\. Conclusion: The program demonstrates the use of arrays, loops, searching, deletion, updating, and switch-case statements in Java for managing library inventory.

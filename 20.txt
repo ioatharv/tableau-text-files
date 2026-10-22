@@ -1,0 +1,109 @@
+
+import java.io.*;
+import java.util.Scanner;
+
+public class FileHandlingDemo {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        File file = new File("student.txt");
+
+        try {
+            // Check and create file
+            if (file.exists()) {
+                System.out.println("File already exists.");
+            } else {
+                if (file.createNewFile()) {
+                    System.out.println("File created successfully.");
+                }
+            }
+
+            // Write multiple lines
+            BufferedWriter bw = new BufferedWriter(
+                    new FileWriter(file));
+
+            System.out.println("Enter text (type STOP to finish):");
+
+            while (true) {
+                String line = sc.nextLine();
+
+                if (line.equalsIgnoreCase("STOP")) {
+                    break;
+                }
+
+                bw.write(line);
+                bw.newLine();
+            }
+
+            bw.close();
+
+            // Read file line by line
+            BufferedReader br = new BufferedReader(
+                    new FileReader(file));
+
+            System.out.println("\nFile Contents:");
+
+            String line;
+            int lineNumber = 1;
+
+            while ((line = br.readLine()) != null) {
+                System.out.println(lineNumber + ": " + line);
+                lineNumber++;
+            }
+
+            br.close();
+
+            // Display file information
+            System.out.println("\nFile Information:");
+            System.out.println("File Name: " + file.getName());
+            System.out.println("Absolute Path: "
+                    + file.getAbsolutePath());
+            System.out.println("File Size: "
+                    + file.length() + " bytes");
+            System.out.println("Readable: " + file.canRead());
+            System.out.println("Writable: " + file.canWrite());
+
+        } catch (IOException e) {
+            System.out.println("File error: " + e.getMessage());
+        }
+
+        sc.close();
+    }
+}
+
+
+
+
+
+## Theory: File Handling in Java
+
+1\. Aim: To develop a Java program to create, write, read, and display information about a text file.
+
+2\. File Class: The `File` class represents the file and provides methods to check its existence and retrieve its properties.
+
+3\. File Creation: The `createNewFile()` method creates a new file named `student.txt` if it does not already exist.
+
+4\. File Existence: The `exists()` method checks whether the specified file already exists.
+
+5\. Scanner Class: The `Scanner` class accepts multiple lines of text from the user.
+
+6\. FileWriter: The `FileWriter` class writes text into the file. By default, it overwrites existing content.
+
+7\. BufferedWriter: The `BufferedWriter` class writes text efficiently using the `write()` and `newLine()` methods.
+
+8\. Writing Data: The program accepts multiple lines from the user and writes them to the file until the user enters `STOP`.
+
+9\. FileReader: The `FileReader` class reads character data from the text file.
+
+10\. BufferedReader: The `BufferedReader` class reads the file line by line using the `readLine()` method.
+
+11\. Line Numbering: A counter displays each line of the file with its corresponding line number.
+
+12\. File Information: Methods such as `getName()`, `getAbsolutePath()`, `length()`, `canRead()`, and `canWrite()` display file properties.
+
+13\. Exception Handling: The `try-catch` block handles file-related errors using `IOException`.
+
+14\. Closing Resources: The `close()` method closes the file readers, writer, and scanner after use.
+
+15\. Conclusion: The program demonstrates file creation, writing, reading, file properties, and exception handling using Java I/O classes.

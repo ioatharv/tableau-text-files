@@ -1,0 +1,491 @@
+CREATE DATABASE IF NOT EXISTS employee_db;
+
+USE employee_db;
+
+CREATE TABLE IF NOT EXISTS employees (
+    employee_id VARCHAR(20) PRIMARY KEY,
+    employee_name VARCHAR(100) NOT NULL,
+    department VARCHAR(100) NOT NULL,
+    designation VARCHAR(100) NOT NULL,
+    mobile VARCHAR(10) NOT NULL,
+    email VARCHAR(100) NOT NULL
+);
+
+SELECT * FROM employees;
+
+
+
+
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class EmployeeRegistration extends JFrame
+        implements ActionListener {
+
+    JTextField idField, nameField, deptField;
+    JTextField designationField, mobileField, emailField;
+
+    JButton submitButton, clearButton, displayButton;
+    JButton searchButton, updateButton, deleteButton;
+
+    JTable table;
+    DefaultTableModel model;
+
+    String url = "jdbc:mysql://localhost:3306/employee_db";
+    String dbUser = "root";
+    String dbPassword = "YOUR_PASSWORD";
+
+    EmployeeRegistration() {
+
+        setTitle("Employee Registration System");
+        setSize(950, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout(10, 10));
+
+        // Input fields
+        idField = new JTextField();
+        nameField = new JTextField();
+        deptField = new JTextField();
+        designationField = new JTextField();
+        mobileField = new JTextField();
+        emailField = new JTextField();
+
+        // Registration form
+        JPanel form = new JPanel(new GridLayout(6, 2, 8, 8));
+        form.setBorder(BorderFactory.createTitledBorder(
+                "Employee Details"));
+
+        addField(form, "Employee ID:", idField);
+        addField(form, "Employee Name:", nameField);
+        addField(form, "Department:", deptField);
+        addField(form, "Designation:", designationField);
+        addField(form, "Mobile Number:", mobileField);
+        addField(form, "Email Address:", emailField);
+
+        add(form, BorderLayout.NORTH);
+
+        // Buttons
+        submitButton = new JButton("Submit");
+        clearButton = new JButton("Clear");
+        displayButton = new JButton("Display All");
+        searchButton = new JButton("Search");
+        updateButton = new JButton("Update");
+        deleteButton = new JButton("Delete");
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+
+        buttonPanel.add(submitButton);
+        buttonPanel.add(clearButton);
+        buttonPanel.add(displayButton);
+        buttonPanel.add(searchButton);
+        buttonPanel.add(updateButton);
+        buttonPanel.add(deleteButton);
+
+        // JTable
+        model = new DefaultTableModel(
+                new String[]{
+                    "Employee ID", "Employee Name", "Department",
+                    "Designation", "Mobile", "Email"
+                }, 0) {
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        table = new JTable(model);
+
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(buttonPanel, BorderLayout.NORTH);
+        centerPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+        add(centerPanel, BorderLayout.CENTER);
+
+        // ActionListener
+        submitButton.addActionListener(this);
+        clearButton.addActionListener(this);
+        displayButton.addActionListener(this);
+        searchButton.addActionListener(this);
+        updateButton.addActionListener(this);
+        deleteButton.addActionListener(this);
+
+        // Click a table row to load its details
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+
+                int row = table.getSelectedRow();
+
+                if (row >= 0) {
+                    idField.setText(model.getValueAt(row, 0).toString());
+                    nameField.setText(model.getValueAt(row, 1).toString());
+                    deptField.setText(model.getValueAt(row, 2).toString());
+                    designationField.setText(
+                            model.getValueAt(row, 3).toString());
+                    mobileField.setText(model.getValueAt(row, 4).toString());
+                    emailField.setText(model.getValueAt(row, 5).toString());
+                }
+            }
+        });
+
+        setVisible(true);
+    }
+
+    void addField(JPanel panel, String label, JTextField field) {
+        panel.add(new JLabel(label));
+        panel.add(field);
+    }
+
+    // JDBC connection
+    Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, dbUser, dbPassword);
+    }
+
+    // Input validation
+    boolean validateFields() {
+
+        if (idField.getText().trim().isEmpty()
+                || nameField.getText().trim().isEmpty()
+                || deptField.getText().trim().isEmpty()
+                || designationField.getText().trim().isEmpty()
+                || mobileField.getText().trim().isEmpty()
+                || emailField.getText().trim().isEmpty()) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Please fill all fields!");
+            return false;
+        }
+
+        if (!mobileField.getText().trim().matches("[0-9]{10}")) {
+            JOptionPane.showMessageDialog(this,
+                    "Mobile number must contain exactly 10 digits!");
+            return false;
+        }
+
+        if (!emailField.getText().trim().matches(
+                "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Please enter a valid email address!");
+            return false;
+        }
+
+        return true;
+    }
+
+    // Handle button clicks
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == submitButton) {
+            insertEmployee();
+        } else if (e.getSource() == clearButton) {
+            clearFields();
+        } else if (e.getSource() == displayButton) {
+            displayAll();
+        } else if (e.getSource() == searchButton) {
+            searchEmployee();
+        } else if (e.getSource() == updateButton) {
+            updateEmployee();
+        } else if (e.getSource() == deleteButton) {
+            deleteEmployee();
+        }
+    }
+
+    // CREATE: Insert employee
+    void insertEmployee() {
+
+        if (!validateFields()) {
+            return;
+        }
+
+        String sql = "INSERT INTO employees VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            setAllParameters(ps);
+
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Employee registered successfully!");
+                clearFields();
+                displayAll();
+            }
+
+        } catch (SQLIntegrityConstraintViolationException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Employee ID already exists!");
+
+        } catch (SQLException ex) {
+            if ("23000".equals(ex.getSQLState())) {
+                JOptionPane.showMessageDialog(this,
+                        "Duplicate Employee ID or constraint violation!");
+            } else {
+                showError(ex);
+            }
+        }
+    }
+
+    // Set insert parameters
+    void setAllParameters(PreparedStatement ps) throws SQLException {
+
+        ps.setString(1, idField.getText().trim());
+        ps.setString(2, nameField.getText().trim());
+        ps.setString(3, deptField.getText().trim());
+        ps.setString(4, designationField.getText().trim());
+        ps.setString(5, mobileField.getText().trim());
+        ps.setString(6, emailField.getText().trim());
+    }
+
+    // READ: Display all employees
+    void displayAll() {
+
+        model.setRowCount(0);
+
+        String sql = "SELECT * FROM employees ORDER BY employee_id";
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                addTableRow(rs);
+            }
+
+            if (model.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this,
+                        "No employee records found.");
+            }
+
+        } catch (SQLException ex) {
+            showError(ex);
+        }
+    }
+
+    // SEARCH: Search by Employee ID
+    void searchEmployee() {
+
+        String id = idField.getText().trim();
+
+        if (id.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Enter Employee ID to search!");
+            return;
+        }
+
+        String sql = "SELECT * FROM employees WHERE employee_id = ?";
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                model.setRowCount(0);
+
+                if (rs.next()) {
+                    fillFields(rs);
+                    addTableRow(rs);
+
+                    JOptionPane.showMessageDialog(this,
+                            "Employee found!");
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Employee not found!");
+                }
+            }
+
+        } catch (SQLException ex) {
+            showError(ex);
+        }
+    }
+
+    // UPDATE: Update employee details by ID
+    void updateEmployee() {
+
+        if (!validateFields()) {
+            return;
+        }
+
+        String sql = "UPDATE employees SET employee_name=?, "
+                + "department=?, designation=?, mobile=?, email=? "
+                + "WHERE employee_id=?";
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, nameField.getText().trim());
+            ps.setString(2, deptField.getText().trim());
+            ps.setString(3, designationField.getText().trim());
+            ps.setString(4, mobileField.getText().trim());
+            ps.setString(5, emailField.getText().trim());
+            ps.setString(6, idField.getText().trim());
+
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Employee updated successfully!");
+                displayAll();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Employee ID not found!");
+            }
+
+        } catch (SQLException ex) {
+            showError(ex);
+        }
+    }
+
+    // DELETE: Delete employee by ID
+    void deleteEmployee() {
+
+        String id = idField.getText().trim();
+
+        if (id.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Enter Employee ID to delete!");
+            return;
+        }
+
+        int choice = JOptionPane.showConfirmDialog(this,
+                "Delete employee with ID " + id + "?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION);
+
+        if (choice != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        String sql = "DELETE FROM employees WHERE employee_id=?";
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, id);
+
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Employee deleted successfully!");
+                clearFields();
+                displayAll();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Employee ID not found!");
+            }
+
+        } catch (SQLException ex) {
+            showError(ex);
+        }
+    }
+
+    // Fill fields from ResultSet
+    void fillFields(ResultSet rs) throws SQLException {
+
+        idField.setText(rs.getString("employee_id"));
+        nameField.setText(rs.getString("employee_name"));
+        deptField.setText(rs.getString("department"));
+        designationField.setText(rs.getString("designation"));
+        mobileField.setText(rs.getString("mobile"));
+        emailField.setText(rs.getString("email"));
+    }
+
+    // Add ResultSet record to JTable
+    void addTableRow(ResultSet rs) throws SQLException {
+
+        model.addRow(new Object[]{
+            rs.getString("employee_id"),
+            rs.getString("employee_name"),
+            rs.getString("department"),
+            rs.getString("designation"),
+            rs.getString("mobile"),
+            rs.getString("email")
+        });
+    }
+
+    // Clear all input fields
+    void clearFields() {
+        idField.setText("");
+        nameField.setText("");
+        deptField.setText("");
+        designationField.setText("");
+        mobileField.setText("");
+        emailField.setText("");
+        idField.requestFocus();
+    }
+
+    void showError(SQLException ex) {
+        JOptionPane.showMessageDialog(this,
+                "Database Error: " + ex.getMessage());
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new EmployeeRegistration();
+        });
+    }
+}
+
+
+
+
+
+## Theory: Employee Registration System Using Java Swing and JDBC
+
+1\. This program develops an Employee Registration System using Java Swing and MySQL database connectivity.
+
+2\. The `employee_db` database contains an `employees` table to store employee ID, employee name, department, designation, mobile number, and email address.
+
+3\. The `JFrame` class creates the main application window.
+
+4\. The `JTextField` class accepts employee details, and the `JLabel` class displays field names.
+
+5\. The `JButton` class creates Submit, Clear, Display All, Search, Update, and Delete buttons.
+
+6\. The `JTable` displays employee records in tabular format, while `DefaultTableModel` manages the table data.
+
+7\. The `ActionListener` interface handles button-click events through the `actionPerformed()` method.
+
+8\. The `getConnection()` method establishes a connection between Java and MySQL using JDBC.
+
+9\. The `validateFields()` method checks that all fields are filled, the mobile number contains exactly 10 digits, and the email address follows the expected format.
+
+10\. The `insertEmployee()` method inserts new employee details into the database using the SQL `INSERT` statement.
+
+11\. The `setAllParameters()` method assigns employee details to the `PreparedStatement` parameters.
+
+12\. The `displayAll()` method retrieves all employee records using the SQL `SELECT` statement and displays them in the table.
+
+13\. The `searchEmployee()` method searches for an employee using Employee ID and displays the matching record.
+
+14\. The `updateEmployee()` method modifies employee details using the SQL `UPDATE` statement.
+
+15\. The `deleteEmployee()` method deletes an employee record using the SQL `DELETE` statement after confirmation from the user.
+
+16\. The `fillFields()` method copies database details into the input fields, while `addTableRow()` adds employee records to the table.
+
+17\. The `clearFields()` method clears all input fields and places the cursor in the Employee ID field.
+
+18\. The `JOptionPane` class displays success messages, validation errors, confirmation dialogs, and database error messages.
+
+19\. The `ResultSet` interface stores the records returned by SQL queries, and `rs.next()` moves through the records.
+
+20\. The program handles duplicate Employee IDs and other database errors using exception handling.
+
+21\. The `try-with-resources` statement automatically closes database resources after use.
+
+22\. The `MouseAdapter` class allows the user to click a table row and load the selected employee's details into the input fields.
+
+23\. The `SwingUtilities.invokeLater()` method starts the Swing application on the Event Dispatch Thread.
+
+Conclusion: This program demonstrates CRUD operations — Create, Read, Update, and Delete — using Java Swing, JDBC, and MySQL to manage employee records through a graphical user interface.

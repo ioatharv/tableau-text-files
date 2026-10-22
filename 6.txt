@@ -1,0 +1,231 @@
+
+import java.util.Scanner;
+
+class Student {
+    int prn;
+    String name, department, year, division;
+    double percentage;
+
+    // Constructor
+    Student(int prn, String name, String department,
+            String year, String division, double percentage) {
+        this.prn = prn;
+        this.name = name;
+        this.department = department;
+        this.year = year;
+        this.division = division;
+        this.percentage = percentage;
+    }
+
+    // Display student details
+    public String toString() {
+        return prn + "\t" + name + "\t" + department + "\t"
+                + year + "\t" + division + "\t" + percentage;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of students: ");
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        if (n <= 0) {
+            System.out.println("Number of students must be positive.");
+            sc.close();
+            return;
+        }
+
+        Student[] students = new Student[n];
+
+        // Input student details
+        for (int i = 0; i < n; i++) {
+            System.out.println("\nStudent " + (i + 1));
+
+            System.out.print("Enter PRN: ");
+            int prn = sc.nextInt();
+            sc.nextLine();
+
+            System.out.print("Enter Name: ");
+            String name = sc.nextLine();
+
+            System.out.print("Enter Department: ");
+            String department = sc.nextLine();
+
+            System.out.print("Enter Academic Year: ");
+            String year = sc.nextLine();
+
+            System.out.print("Enter Division: ");
+            String division = sc.nextLine();
+
+            double percentage;
+
+            // Validate percentage
+            while (true) {
+                System.out.print("Enter Percentage (0-100): ");
+                percentage = sc.nextDouble();
+                sc.nextLine();
+
+                if (percentage >= 0 && percentage <= 100) {
+                    break;
+                }
+
+                System.out.println("Invalid! Enter percentage between 0 and 100.");
+            }
+
+            students[i] = new Student(prn, name, department,
+                                      year, division, percentage);
+        }
+
+        int choice;
+
+        do {
+            System.out.println("\n===== STUDENT MENU =====");
+            System.out.println("1. Display All Students");
+            System.out.println("2. Search Student by PRN");
+            System.out.println("3. Sort by Percentage (Descending)");
+            System.out.println("4. Display Students Above Threshold");
+            System.out.println("5. Display Class Average");
+            System.out.println("6. Exit");
+            System.out.print("Enter choice: ");
+
+            choice = sc.nextInt();
+
+            switch (choice) {
+
+                case 1:
+                    System.out.println("PRN\tName\tDepartment\tYear\tDivision\tPercentage");
+                    for (Student s : students) {
+                        System.out.println(s);
+                    }
+                    break;
+
+                case 2:
+                    System.out.print("Enter PRN to search: ");
+                    int searchPRN = sc.nextInt();
+                    boolean found = false;
+
+                    for (Student s : students) {
+                        if (s.prn == searchPRN) {
+                            System.out.println(s);
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("Student not found.");
+                    }
+                    break;
+
+                case 3:
+                    // Bubble sort in descending order
+                    for (int i = 0; i < n - 1; i++) {
+                        for (int j = 0; j < n - 1 - i; j++) {
+                            if (students[j].percentage
+                                    < students[j + 1].percentage) {
+
+                                Student temp = students[j];
+                                students[j] = students[j + 1];
+                                students[j + 1] = temp;
+                            }
+                        }
+                    }
+
+                    System.out.println("Students sorted by percentage:");
+                    for (Student s : students) {
+                        System.out.println(s);
+                    }
+                    break;
+
+                case 4:
+                    System.out.print("Enter percentage threshold: ");
+                    double threshold = sc.nextDouble();
+
+                    if (threshold < 0 || threshold > 100) {
+                        System.out.println("Invalid threshold!");
+                        break;
+                    }
+
+                    found = false;
+
+                    for (Student s : students) {
+                        if (s.percentage > threshold) {
+                            System.out.println(s);
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("No students above threshold.");
+                    }
+                    break;
+
+                case 5:
+                    double total = 0;
+
+                    for (Student s : students) {
+                        total += s.percentage;
+                    }
+
+                    double average = total / n;
+                    System.out.println("Class Average = " + average);
+                    break;
+
+                case 6:
+                    System.out.println("Program ended.");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+
+        } while (choice != 6);
+
+        sc.close();
+    }
+}
+
+
+
+## Theory: Student Performance Management System in Java
+
+1\. Aim: To develop a menu-driven Student Performance Management System using Java.
+
+2\. Student Class: Stores student details such as PRN, name, department, academic year, division, and percentage.
+
+3\. Data Members: Variables store the personal and academic information of each student.
+
+4\. Parameterized Constructor: Initializes all student details when an object is created.
+
+5\. `this` Keyword: Refers to the current object and assigns values to instance variables.
+
+6\. `toString()` Method: Overrides the `toString()` method to display student details in a readable format.
+
+7\. Scanner Class: Accepts student details and menu choices from the user.
+
+8\. Array of Objects: A `Student` array stores the records of multiple students.
+
+9\. Input Validation: Checks that the number of students is positive and the percentage is between 0 and 100.
+
+10\. Display All Students: Displays the records of all students in tabular format.
+
+11\. Search Student: Searches for a student using their PRN and displays the details if found.
+
+12\. Sorting by Percentage: Uses the Bubble Sort algorithm to arrange students in descending order of percentage.
+
+13\. Threshold Search: Displays students whose percentages are greater than the user-entered threshold.
+
+14\. Class Average: Calculates the average percentage of all students by dividing the total percentage by the number of students.
+
+15\. Switch Statement: Executes the operation selected by the user.
+
+16\. Do-While Loop: Repeats the menu until the user selects Exit (option 6).
+
+17\. For Loop: Used for displaying, searching, sorting, and calculating the average percentage.
+
+18\. Conditional Statements: Used to validate input, compare percentages, and check whether a student is found.
+
+19\. Conclusion: The program demonstrates classes, objects, constructors, method overriding, arrays of objects, searching, Bubble Sort, input validation, and statistical calculations in Java.

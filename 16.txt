@@ -1,0 +1,304 @@
+
+import java.util.*;
+
+class Product {
+    int id;
+    String category, name;
+    double price;
+    int quantity;
+
+    Product(int id, String category, String name,
+            double price, int quantity) {
+        this.id = id;
+        this.category = category;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    public String toString() {
+        return "ID: " + id +
+               ", Category: " + category +
+               ", Name: " + name +
+               ", Price: " + price +
+               ", Quantity: " + quantity;
+    }
+}
+
+public class InventoryManagement {
+    static Scanner sc = new Scanner(System.in);
+
+    static ArrayList<Product> inventory = new ArrayList<>();
+    static LinkedList<Product> linkedInventory = new LinkedList<>();
+
+    static Product search(int id) {
+        for (Product p : inventory) {
+            if (p.id == id)
+                return p;
+        }
+        return null;
+    }
+
+    static void display() {
+        System.out.println("\n--- ArrayList Inventory ---");
+
+        if (inventory.isEmpty()) {
+            System.out.println("Inventory is empty.");
+        } else {
+            for (Product p : inventory) {
+                System.out.println(p);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        int choice;
+
+        do {
+            System.out.println("\n--- INVENTORY MENU ---");
+            System.out.println("1. Add Product");
+            System.out.println("2. Remove Product");
+            System.out.println("3. Update Product");
+            System.out.println("4. Display Inventory");
+            System.out.println("5. Search Product by ID");
+            System.out.println("6. LinkedList Operations");
+            System.out.println("7. Exit");
+            System.out.print("Enter choice: ");
+            choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Product ID: ");
+                    int id = sc.nextInt();
+
+                    if (search(id) != null) {
+                        System.out.println("Product ID already exists.");
+                        break;
+                    }
+
+                    sc.nextLine();
+                    System.out.print("Enter Category: ");
+                    String category = sc.nextLine();
+
+                    System.out.print("Enter Name: ");
+                    String name = sc.nextLine();
+
+                    System.out.print("Enter Price: ");
+                    double price = sc.nextDouble();
+
+                    System.out.print("Enter Quantity: ");
+                    int quantity = sc.nextInt();
+
+                    if (price <= 0 || quantity < 0) {
+                        System.out.println("Invalid price or quantity!");
+                        break;
+                    }
+
+                    Product p = new Product(
+                        id, category, name, price, quantity
+                    );
+
+                    inventory.add(p);
+                    System.out.println("Product added successfully.");
+                    display();
+                    break;
+
+                case 2:
+                    System.out.print("Enter ID to remove: ");
+                    id = sc.nextInt();
+
+                    Product found = search(id);
+
+                    if (found != null) {
+                        inventory.remove(found);
+                        System.out.println("Product removed.");
+                    } else {
+                        System.out.println("Product not found.");
+                    }
+
+                    display();
+                    break;
+
+                case 3:
+                    System.out.print("Enter ID to update: ");
+                    id = sc.nextInt();
+
+                    found = search(id);
+
+                    if (found != null) {
+                        System.out.print("Enter new price: ");
+                        price = sc.nextDouble();
+
+                        System.out.print("Enter new quantity: ");
+                        quantity = sc.nextInt();
+
+                        if (price > 0 && quantity >= 0) {
+                            found.price = price;
+                            found.quantity = quantity;
+                            System.out.println("Product updated.");
+                        } else {
+                            System.out.println("Invalid values!");
+                        }
+                    } else {
+                        System.out.println("Product not found.");
+                    }
+
+                    display();
+                    break;
+
+                case 4:
+                    display();
+                    break;
+
+                case 5:
+                    System.out.print("Enter Product ID: ");
+                    id = sc.nextInt();
+
+                    found = search(id);
+
+                    if (found != null)
+                        System.out.println(found);
+                    else
+                        System.out.println("Product not found.");
+
+                    break;
+
+                case 6:
+                    linkedInventory.clear();
+                    linkedInventory.addAll(inventory);
+
+                    System.out.println("\n1. Insert at beginning");
+                    System.out.println("2. Insert at end");
+                    System.out.println("3. Remove product");
+                    System.out.println("4. Reverse traversal");
+                    System.out.print("Enter choice: ");
+                    int op = sc.nextInt();
+
+                    if (op == 1 || op == 2) {
+                        System.out.print("Enter ID: ");
+                        id = sc.nextInt();
+
+                        if (search(id) != null) {
+                            System.out.println("ID already exists.");
+                            break;
+                        }
+
+                        sc.nextLine();
+                        System.out.print("Enter Category: ");
+                        category = sc.nextLine();
+
+                        System.out.print("Enter Name: ");
+                        name = sc.nextLine();
+
+                        System.out.print("Enter Price: ");
+                        price = sc.nextDouble();
+
+                        System.out.print("Enter Quantity: ");
+                        quantity = sc.nextInt();
+
+                        if (price <= 0 || quantity < 0) {
+                            System.out.println("Invalid values!");
+                            break;
+                        }
+
+                        Product np = new Product(
+                            id, category, name, price, quantity
+                        );
+
+                        if (op == 1)
+                            linkedInventory.addFirst(np);
+                        else
+                            linkedInventory.addLast(np);
+                    } else if (op == 3) {
+                        System.out.print("Enter ID to remove: ");
+                        id = sc.nextInt();
+
+                        boolean removed = false;
+
+                        Iterator<Product> it =
+                            linkedInventory.iterator();
+
+                        while (it.hasNext()) {
+                            if (it.next().id == id) {
+                                it.remove();
+                                removed = true;
+                                break;
+                            }
+                        }
+
+                        System.out.println(removed
+                            ? "Product removed."
+                            : "Product not found.");
+                    } else if (op == 4) {
+                        ListIterator<Product> it =
+                            linkedInventory.listIterator(
+                                linkedInventory.size()
+                            );
+
+                        System.out.println("Reverse Inventory:");
+
+                        while (it.hasPrevious()) {
+                            System.out.println(it.previous());
+                        }
+                    } else {
+                        System.out.println("Invalid choice.");
+                    }
+
+                    System.out.println("\n--- LinkedList Inventory ---");
+                    for (Product item : linkedInventory) {
+                        System.out.println(item);
+                    }
+                    break;
+
+                case 7:
+                    System.out.println("Program ended.");
+                    break;
+
+                default:
+                    System.out.println("Invalid menu choice!");
+            }
+
+        } while (choice != 7);
+
+        sc.close();
+    }
+}
+
+
+
+
+## Theory: Inventory Management System Using ArrayList and LinkedList in Java
+
+1\. Aim: To develop a menu-driven Inventory Management System using Java Collections Framework.
+
+2\. Product Class: Stores product details such as ID, category, name, price, and quantity.
+
+3\. Parameterized Constructor: Initializes product details when an object is created.
+
+4\. `toString()` Method: Overrides the `toString()` method to display product information in a readable format.
+
+5\. ArrayList: Stores product records dynamically and supports adding, removing, updating, displaying, and searching products.
+
+6\. LinkedList: Stores product records and supports insertion at the beginning or end, deletion, and reverse traversal.
+
+7\. Add Product: Accepts product details, checks for duplicate IDs, validates price and quantity, and adds the product to the inventory.
+
+8\. Remove Product: Searches for a product by ID and removes it if found.
+
+9\. Update Product: Updates the price and quantity of an existing product after validating the entered values.
+
+10\. Display Inventory: Displays all products stored in the `ArrayList`.
+
+11\. Search Product: Searches for a product using its ID and displays its details if found.
+
+12\. Iterator: The `Iterator` interface is used to traverse the `LinkedList` and remove a product safely during iteration.
+
+13\. ListIterator: The `ListIterator` interface traverses the `LinkedList` in reverse order using `hasPrevious()` and `previous()`.
+
+14\. Collection Methods: Methods such as `add()`, `addFirst()`, `addLast()`, `remove()`, `clear()`, and `addAll()` manage product records.
+
+15\. Switch Statement and Do-While Loop: The `switch` statement performs the selected operation, while the `do-while` loop repeats the menu until the user selects Exit.
+
+16\. Input Validation: Checks for duplicate product IDs, positive prices, non-negative quantities, and valid menu choices.
+
+17\. Conclusion: The program demonstrates classes, objects, constructors, `ArrayList`, `LinkedList`, iterators, searching, insertion, deletion, updating, and collection traversal in Java.

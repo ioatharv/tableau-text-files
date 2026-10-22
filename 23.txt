@@ -1,0 +1,192 @@
+CREATE DATABASE hospital;
+USE hospital;
+
+CREATE TABLE patient (
+    id INT PRIMARY KEY,
+    name VARCHAR(50),
+    age INT,
+    gender VARCHAR(10),
+    disease VARCHAR(100),
+    appointment VARCHAR(30)
+);
+
+
+
+
+public class Patient {
+    int id;
+    String name;
+    int age;
+    String gender;
+    String disease;
+    String appointment;
+
+    public Patient(int id, String name, int age,
+                   String gender, String disease,
+                   String appointment) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.disease = disease;
+        this.appointment = appointment;
+    }
+
+    public void display() {
+        System.out.println("ID: " + id);
+        System.out.println("Name: " + name);
+        System.out.println("Age: " + age);
+        System.out.println("Gender: " + gender);
+        System.out.println("Disease: " + disease);
+        System.out.println("Appointment: " + appointment);
+        System.out.println("----------------------");
+    }
+}
+
+
+
+
+import java.util.Scanner;
+
+public class HospitalManagement {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        HospitalDAO dao = new HospitalDAO();
+
+        int choice;
+
+        do {
+            System.out.println("\n===== HOSPITAL MANAGEMENT =====");
+            System.out.println("1. Add Patient");
+            System.out.println("2. Display All Patients");
+            System.out.println("3. Search Patient");
+            System.out.println("4. Update Disease");
+            System.out.println("5. Delete Patient");
+            System.out.println("6. Exit");
+            System.out.print("Enter choice: ");
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter ID: ");
+                    int id = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Enter Name: ");
+                    String name = sc.nextLine();
+
+                    System.out.print("Enter Age: ");
+                    int age = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Enter Gender: ");
+                    String gender = sc.nextLine();
+
+                    System.out.print("Enter Disease: ");
+                    String disease = sc.nextLine();
+
+                    System.out.print("Enter Appointment: ");
+                    String appointment = sc.nextLine();
+
+                    if (id <= 0 || age < 0 ||
+                        name.trim().isEmpty() ||
+                        gender.trim().isEmpty() ||
+                        disease.trim().isEmpty() ||
+                        appointment.trim().isEmpty()) {
+                        System.out.println("Invalid patient details!");
+                        break;
+                    }
+
+                    Patient p = new Patient(
+                        id, name, age, gender, disease, appointment
+                    );
+
+                    dao.addPatient(p);
+                    break;
+
+                case 2:
+                    dao.displayAll();
+                    break;
+
+                case 3:
+                    System.out.print("Enter Patient ID: ");
+                    id = sc.nextInt();
+                    dao.searchPatient(id);
+                    break;
+
+                case 4:
+                    System.out.print("Enter Patient ID: ");
+                    id = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Enter New Disease: ");
+                    disease = sc.nextLine();
+
+                    if (disease.trim().isEmpty()) {
+                        System.out.println("Disease cannot be empty!");
+                    } else {
+                        dao.updateDisease(id, disease);
+                    }
+                    break;
+
+                case 5:
+                    System.out.print("Enter Patient ID: ");
+                    id = sc.nextInt();
+                    dao.deletePatient(id);
+                    break;
+
+                case 6:
+                    System.out.println("Exiting application...");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+
+        } while (choice != 6);
+
+        sc.close();
+    }
+}
+
+
+## Theory: Hospital Management System Using JDBC and MySQL
+
+1\. Aim: To develop a Hospital Management System using Java, JDBC, and MySQL to manage patient records.
+
+2\. Database: A MySQL database named `hospital` is created to store patient information.
+
+3\. Table Creation: The `patient` table stores patient ID, name, age, gender, disease, and appointment details.
+
+4\. Patient Class: Represents a patient and stores all patient-related information using instance variables.
+
+5\. Parameterized Constructor: Initializes patient details when a `Patient` object is created.
+
+6\. Display Method: The `display()` method displays the complete details of a patient.
+
+7\. HospitalManagement Class: Provides a menu-driven interface for managing patient records.
+
+8\. Add Patient: Accepts patient details, validates the input, creates a `Patient` object, and passes it to the DAO class for insertion into the database.
+
+9\. Display All Patients: Retrieves and displays all patient records stored in the database.
+
+10\. Search Patient: Searches for a patient using the patient ID.
+
+11\. Update Disease: Updates the disease information of an existing patient.
+
+12\. Delete Patient: Deletes a patient record using the patient ID.
+
+13\. DAO Class: The `HospitalDAO` class handles database operations such as inserting, displaying, searching, updating, and deleting records.
+
+14\. JDBC Connectivity: Java Database Connectivity (JDBC) allows the Java application to communicate with the MySQL database.
+
+15\. Input Validation: Checks patient ID, age, name, gender, disease, and appointment details before processing.
+
+16\. Switch Statement and Do-While Loop: The `switch` statement performs the selected operation, while the `do-while` loop repeats the menu until the user selects Exit.
+
+17\. Conclusion: The program demonstrates Java classes and objects, JDBC connectivity, MySQL database operations, CRUD operations, input validation, and menu-driven programming.
+
+Note: The `HospitalDAO` class must be implemented separately to establish the JDBC connection and execute database queries.

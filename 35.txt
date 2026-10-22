@@ -1,0 +1,119 @@
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface AddService extends Remote {
+    int add(int a, int b) throws RemoteException;
+}
+
+
+
+
+
+import java.rmi.*;
+import java.rmi.server.*;
+import java.rmi.registry.*;
+
+class AddServiceImpl extends UnicastRemoteObject
+        implements AddService {
+
+    public AddServiceImpl() throws RemoteException {
+        super();
+    }
+
+    public int add(int a, int b) throws RemoteException {
+        return a + b;
+    }
+}
+
+public class AddServer {
+    public static void main(String[] args) {
+        try {
+            LocateRegistry.createRegistry(1099);
+
+            AddService service = new AddServiceImpl();
+
+            Naming.rebind("rmi://localhost:1099/AddService",
+                          service);
+
+            System.out.println("Server is running...");
+        } catch (Exception e) {
+            System.out.println("Server Error: " + e);
+        }
+    }
+}
+
+
+
+
+
+import java.rmi.*;
+import java.util.Scanner;
+
+public class AddClient {
+    public static void main(String[] args) {
+        try {
+            AddService service = (AddService)
+                Naming.lookup("rmi://localhost:1099/AddService");
+
+            Scanner sc = new Scanner(System.in);
+
+            System.out.print("Enter first number: ");
+            int a = sc.nextInt();
+
+            System.out.print("Enter second number: ");
+            int b = sc.nextInt();
+
+            int result = service.add(a, b);
+
+            System.out.println("Addition = " + result);
+
+            sc.close();
+        } catch (NotBoundException e) {
+            System.out.println("Service not found!");
+        } catch (RemoteException e) {
+            System.out.println("Connection error: " + e);
+        } catch (Exception e) {
+            System.out.println("Invalid input: " + e);
+        }
+    }
+}
+
+
+
+
+
+
+## Theory: Client-Server Application Using Java RMI for Addition
+
+1\. This program develops a client-server application using Java Remote Method Invocation (RMI) to perform the addition of two numbers.
+
+2\. RMI allows a client to call a method of an object running on a remote server.
+
+3\. The `Remote` interface is used to define methods that can be accessed remotely.
+
+4\. The `AddService` interface declares the `add(int a, int b)` method, which accepts two integers and returns their sum.
+
+5\. The `RemoteException` class handles errors that may occur during remote method communication.
+
+6\. The `AddServiceImpl` class implements the `AddService` interface and extends `UnicastRemoteObject` to make the object available for remote calls.
+
+7\. The `add()` method performs the addition of two numbers and returns the result.
+
+8\. The `LocateRegistry.createRegistry(1099)` method starts the RMI Registry on port number `1099`.
+
+9\. The `Naming.rebind()` method registers the remote object with the name `AddService`.
+
+10\. The client uses `Naming.lookup()` to locate the registered remote service on the server.
+
+11\. The `Scanner` class accepts two numbers from the user.
+
+12\. The client calls the remote `add()` method, which performs the addition on the server and returns the result.
+
+13\. The result is displayed on the client side.
+
+14\. The `NotBoundException` handles cases where the requested service is not registered in the RMI Registry.
+
+15\. The program uses exception handling to manage connection errors, invalid input, and other exceptions.
+
+Conclusion: This program demonstrates Java RMI by allowing a client to send two numbers to a remote server, perform addition on the server, and receive the result.

@@ -1,0 +1,205 @@
+
+import java.util.*;
+
+class Product {
+    int id;
+    String category, name;
+    double price;
+    int quantity;
+
+    Product(int id, String category, String name,
+            double price, int quantity) {
+        this.id = id;
+        this.category = category;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+
+        if (!(obj instanceof Product))
+            return false;
+
+        Product p = (Product) obj;
+        return this.id == p.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id +
+               ", Category: " + category +
+               ", Name: " + name +
+               ", Price: " + price +
+               ", Quantity: " + quantity;
+    }
+}
+
+public class InventoryHashSet {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        HashSet<Product> products = new HashSet<>();
+
+        int choice;
+
+        do {
+            System.out.println("\n--- INVENTORY MENU ---");
+            System.out.println("1. Add Product");
+            System.out.println("2. Search Product");
+            System.out.println("3. Display All Products");
+            System.out.println("4. Total Inventory Value");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice: ");
+            choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Product ID: ");
+                    int id = sc.nextInt();
+
+                    sc.nextLine();
+                    System.out.print("Enter Category: ");
+                    String category = sc.nextLine();
+
+                    System.out.print("Enter Product Name: ");
+                    String name = sc.nextLine();
+
+                    System.out.print("Enter Price: ");
+                    double price = sc.nextDouble();
+
+                    System.out.print("Enter Quantity: ");
+                    int quantity = sc.nextInt();
+
+                    if (price <= 0 || quantity < 0) {
+                        System.out.println(
+                            "Invalid price or quantity!"
+                        );
+                        break;
+                    }
+
+                    Product p = new Product(
+                        id, category, name, price, quantity
+                    );
+
+                    if (products.add(p)) {
+                        System.out.println(
+                            "Product added successfully."
+                        );
+                    } else {
+                        System.out.println(
+                            "Duplicate Product ID! Product rejected."
+                        );
+                    }
+
+                    System.out.println("Current Inventory:");
+                    for (Product item : products) {
+                        System.out.println(item);
+                    }
+                    break;
+
+                case 2:
+                    System.out.print("Enter ID to search: ");
+                    id = sc.nextInt();
+
+                    boolean found = false;
+
+                    for (Product item : products) {
+                        if (item.id == id) {
+                            System.out.println(
+                                "Product Found: " + item
+                            );
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("Product not found.");
+                    }
+                    break;
+
+                case 3:
+                    System.out.println("\n--- ALL PRODUCTS ---");
+
+                    if (products.isEmpty()) {
+                        System.out.println("Inventory is empty.");
+                    } else {
+                        for (Product item : products) {
+                            System.out.println(item);
+                        }
+                    }
+                    break;
+
+                case 4:
+                    double total = 0;
+
+                    for (Product item : products) {
+                        total += item.price * item.quantity;
+                    }
+
+                    System.out.println(
+                        "Total Inventory Value = Rs. " + total
+                    );
+                    break;
+
+                case 5:
+                    System.out.println("Program ended.");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+
+        } while (choice != 5);
+
+        sc.close();
+    }
+}
+
+
+
+
+
+## Theory: Inventory Management System Using HashSet in Java
+
+1\. Aim: To develop a menu-driven Inventory Management System using the `HashSet` collection in Java.
+
+2\. Product Class: Stores product details such as ID, category, name, price, and quantity.
+
+3\. Parameterized Constructor: Initializes the product details when an object is created.
+
+4\. HashSet: Stores product objects and prevents duplicate products according to the `equals()` and `hashCode()` methods.
+
+5\. `equals()` Method: Overrides the `equals()` method to compare products using their IDs.
+
+6\. `hashCode()` Method: Generates a hash code based on the product ID to support efficient storage and duplicate checking in the `HashSet`.
+
+7\. `toString()` Method: Displays product details in a readable format.
+
+8\. Add Product: Accepts product details, validates price and quantity, and adds the product if its ID is unique.
+
+9\. Search Product: Searches for a product using its ID and displays the details if found.
+
+10\. Display All Products: Displays all products stored in the `HashSet`.
+
+11\. Total Inventory Value: Calculates the total value of inventory using the formula:
+
+Total Value = Sum of (Product Price × Quantity)
+
+12\. Input Validation: Checks that the price is positive and the quantity is non-negative.
+
+13\. Switch Statement: Executes the operation selected by the user from the menu.
+
+14\. Do-While Loop: Repeats the menu until the user selects Exit (option 5).
+
+15\. Enhanced For Loop: Traverses the `HashSet` to display products, search for a product, and calculate the total inventory value.
+
+16\. Conclusion: The program demonstrates classes, objects, constructors, `HashSet`, method overriding, duplicate prevention, searching, iteration, and inventory value calculation in Java.

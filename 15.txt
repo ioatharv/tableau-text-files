@@ -1,0 +1,115 @@
+
+class BookingSystem {
+    int availableSeats;
+    int totalSeatsBooked = 0;
+    int successfulBookings = 0;
+    int failedBookings = 0;
+
+    BookingSystem(int seats) {
+        availableSeats = seats;
+    }
+
+    synchronized boolean bookSeats(String name, int seats) {
+        System.out.println(name + " requested " + seats + " seats.");
+
+        if (seats > 0 && seats <= availableSeats) {
+            availableSeats = availableSeats - seats;
+            totalSeatsBooked = totalSeatsBooked + seats;
+            successfulBookings++;
+
+            System.out.println(name + ": Booking Successful!");
+            return true;
+        } else {
+            failedBookings++;
+            System.out.println(name + ": Booking Failed!");
+            return false;
+        }
+    }
+
+    synchronized void displaySummary() {
+        System.out.println("\n===== BOOKING SUMMARY =====");
+        System.out.println("Successful bookings: " + successfulBookings);
+        System.out.println("Failed bookings: " + failedBookings);
+        System.out.println("Total seats booked: " + totalSeatsBooked);
+        System.out.println("Remaining seats: " + availableSeats);
+    }
+}
+
+class BookingThread extends Thread {
+    BookingSystem system;
+    String userName;
+    int seats;
+
+    BookingThread(BookingSystem system, String userName, int seats) {
+        this.system = system;
+        this.userName = userName;
+        this.seats = seats;
+    }
+
+    public void run() {
+        system.bookSeats(userName, seats);
+    }
+}
+
+public class ConcurrentMovieBooking {
+    public static void main(String[] args) throws InterruptedException {
+
+        BookingSystem system = new BookingSystem(10);
+
+        BookingThread t1 = new BookingThread(system, "Amit", 3);
+        BookingThread t2 = new BookingThread(system, "Rahul", 4);
+        BookingThread t3 = new BookingThread(system, "Priya", 2);
+        BookingThread t4 = new BookingThread(system, "Sneha", 5);
+        BookingThread t5 = new BookingThread(system, "Rohit", 2);
+
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
+        t5.start();
+
+        // Wait for all threads to complete
+        t1.join();
+        t2.join();
+        t3.join();
+        t4.join();
+        t5.join();
+
+        system.displaySummary();
+    }
+}
+
+
+
+
+## Theory: Concurrent Movie Booking System Using Multithreading in Java
+
+1\. Aim: To develop a concurrent movie booking system using multithreading and synchronization in Java.
+
+2\. BookingSystem Class: Manages available seats, total seats booked, successful bookings, and failed bookings.
+
+3\. Constructor: Initializes the total number of available seats.
+
+4\. Synchronized Method: The `bookSeats()` method uses the `synchronized` keyword to prevent multiple threads from modifying booking data simultaneously.
+
+5\. Seat Booking: Checks whether the requested number of seats is positive and does not exceed the available seats.
+
+6\. Successful Booking: Decreases available seats, increases the total seats booked, and increments the successful booking count.
+
+7\. Failed Booking: Increments the failed booking count when the requested seats are invalid or unavailable.
+
+8\. BookingThread Class: Extends the `Thread` class and overrides the `run()` method to perform booking operations.
+
+9\. Thread Creation: Five threads represent five users attempting to book movie seats concurrently.
+
+10\. Start Method: The `start()` method starts each thread and allows its `run()` method to execute independently.
+
+11\. Join Method: The `join()` method ensures that the main thread waits for all booking threads to finish.
+
+12\. Booking Summary: The `displaySummary()` method displays successful bookings, failed bookings, total seats booked, and remaining seats.
+
+13\. Thread Safety: Synchronization protects shared booking data and prevents race conditions during seat allocation.
+
+14\. Conditional Statements: The `if-else` statement determines whether a booking request can be fulfilled.
+
+15\. Conclusion: The program demonstrates multithreading, thread synchronization, thread coordination, shared resource management, and concurrent booking operations in Java.

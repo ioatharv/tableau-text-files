@@ -1,0 +1,149 @@
+
+interface Vehicle {
+    void start();
+    void stop();
+    int getSpeed();
+    String fuelType();
+}
+
+interface Maintenance {
+    int HANDLING_CHARGE = 500;
+
+    void performMaintenance();
+}
+
+class Car implements Vehicle, Maintenance {
+    public void start() {
+        System.out.println("Car started");
+    }
+
+    public void stop() {
+        System.out.println("Car stopped");
+    }
+
+    public int getSpeed() {
+        return 120;
+    }
+
+    public String fuelType() {
+        return "Petrol";
+    }
+
+    public void performMaintenance() {
+        System.out.println("Car maintenance completed");
+    }
+}
+
+class Bus implements Vehicle, Maintenance {
+    public void start() {
+        System.out.println("Bus started");
+    }
+
+    public void stop() {
+        System.out.println("Bus stopped");
+    }
+
+    public int getSpeed() {
+        return 80;
+    }
+
+    public String fuelType() {
+        return "Diesel";
+    }
+
+    public void performMaintenance() {
+        System.out.println("Bus maintenance completed");
+    }
+}
+
+class Motorcycle implements Vehicle {
+    public void start() {
+        System.out.println("Motorcycle started");
+    }
+
+    public void stop() {
+        System.out.println("Motorcycle stopped");
+    }
+
+    public int getSpeed() {
+        return 100;
+    }
+
+    public String fuelType() {
+        return "Petrol";
+    }
+}
+
+public class VehicleManagement {
+    public static void main(String[] args) {
+
+        Vehicle[] vehicles = {
+            new Car(),
+            new Bus(),
+            new Motorcycle()
+        };
+
+        for (Vehicle v : vehicles) {
+            System.out.println("\n------------------");
+
+            v.start();
+            System.out.println("Speed: " + v.getSpeed() + " km/h");
+            System.out.println("Fuel: " + v.fuelType());
+            v.stop();
+
+            if (v instanceof Maintenance) {
+                Maintenance m = (Maintenance) v;
+
+                m.performMaintenance();
+
+                if (v instanceof Car) {
+                    System.out.println("Maintenance Cost: Rs. "
+                        + (1500 + Maintenance.HANDLING_CHARGE));
+                } else if (v instanceof Bus) {
+                    System.out.println("Maintenance Cost: Rs. "
+                        + (3000 + Maintenance.HANDLING_CHARGE));
+                }
+            } else {
+                System.out.println(
+                    "Maintenance not supported");
+            }
+        }
+    }
+}
+
+
+
+
+## Theory: Vehicle Management System Using Interfaces in Java
+
+1\. Aim: To develop a Vehicle Management System using interfaces and multiple interface implementation in Java.
+
+2\. Vehicle Interface: Defines the methods `start()`, `stop()`, `getSpeed()`, and `fuelType()` for all vehicles.
+
+3\. Maintenance Interface: Defines the `performMaintenance()` method and a constant `HANDLING_CHARGE` of ₹500.
+
+4\. Car Class: Implements both `Vehicle` and `Maintenance` interfaces and provides car-specific details and maintenance functionality.
+
+5\. Bus Class: Implements both interfaces and provides bus-specific speed, fuel type, and maintenance details.
+
+6\. Motorcycle Class: Implements only the `Vehicle` interface and provides motorcycle-specific functionality.
+
+7\. Interface Implementation: The `implements` keyword is used to implement interface methods in classes.
+
+8\. Multiple Inheritance: Java supports multiple inheritance through interfaces. The `Car` and `Bus` classes implement two interfaces.
+
+9\. Method Overriding: Each vehicle class provides its own implementation of the interface methods.
+
+10\. Array of Objects: A `Vehicle` array stores objects of `Car`, `Bus`, and `Motorcycle`.
+
+11\. Runtime Polymorphism: The same `Vehicle` reference invokes the appropriate methods for different vehicle objects.
+
+12\. `instanceof` Operator: Checks whether an object implements the `Maintenance` interface or belongs to a specific vehicle class.
+
+13\. Type Casting: The statement `(Maintenance) v` converts a compatible `Vehicle` reference into a `Maintenance` reference.
+
+14\. Maintenance Cost: The program calculates maintenance charges by adding the handling charge to the fixed cost for cars and buses.
+
+15\. Enhanced For Loop: Iterates through the vehicle array and displays each vehicle's information.
+
+16\. Conclusion: The program demonstrates interfaces, multiple interface implementation, method overriding, runtime polymorphism, type casting, and the `instanceof` operator in Java.

@@ -1,0 +1,166 @@
+
+import java.util.*;
+
+class Product implements Comparable<Product> {
+    int id;
+    String name;
+    double price;
+    int quantity;
+
+    Product(int id, String name, double price, int quantity) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    // Sort by price (ascending)
+    public int compareTo(Product p) {
+        return Double.compare(this.price, p.price);
+    }
+
+    public String toString() {
+        return "ID: " + id +
+               ", Name: " + name +
+               ", Price: " + price +
+               ", Quantity: " + quantity;
+    }
+}
+
+public class ProductSorting {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        ArrayList<Product> products = new ArrayList<>();
+
+        System.out.print("Enter number of products: ");
+        int n = sc.nextInt();
+
+        for (int i = 0; i < n; i++) {
+            System.out.println("\nEnter Product " + (i + 1));
+
+            System.out.print("Enter ID: ");
+            int id = sc.nextInt();
+
+            sc.nextLine();
+            System.out.print("Enter Name: ");
+            String name = sc.nextLine();
+
+            System.out.print("Enter Price: ");
+            double price = sc.nextDouble();
+
+            System.out.print("Enter Quantity: ");
+            int quantity = sc.nextInt();
+
+            if (price <= 0 || quantity < 0) {
+                System.out.println("Invalid price or quantity!");
+                i--;
+                continue;
+            }
+
+            products.add(new Product(id, name, price, quantity));
+        }
+
+        // TreeSet sorted by price
+        TreeSet<Product> priceSet = new TreeSet<>(products);
+
+        System.out.println("\n--- Products Sorted by Price ---");
+        for (Product p : priceSet) {
+            System.out.println(p);
+        }
+
+        // Comparator sorted by name
+        Comparator<Product> nameComparator =
+            (p1, p2) -> {
+                int result = p1.name.compareToIgnoreCase(p2.name);
+                if (result == 0)
+                    return Integer.compare(p1.id, p2.id);
+                return result;
+            };
+
+        TreeSet<Product> nameSet = new TreeSet<>(nameComparator);
+        nameSet.addAll(products);
+
+        System.out.println("\n--- Products Sorted by Name ---");
+        for (Product p : nameSet) {
+            System.out.println(p);
+        }
+
+        // PriorityQueue: lowest quantity first
+        PriorityQueue<Product> queue =
+            new PriorityQueue<>(
+                (p1, p2) -> Integer.compare(p1.quantity, p2.quantity)
+            );
+
+        queue.addAll(products);
+
+        System.out.println("\n--- Priority Queue (Lowest Quantity First) ---");
+        while (!queue.isEmpty()) {
+            System.out.println(queue.poll());
+        }
+
+        // HashMap using Product ID as key
+        HashMap<Integer, Product> map = new HashMap<>();
+
+        for (Product p : products) {
+            map.put(p.id, p);
+        }
+
+        System.out.println("\n--- HashMap Product Records ---");
+        for (Map.Entry<Integer, Product> entry : map.entrySet()) {
+            System.out.println(
+                "Key: " + entry.getKey() + " -> " + entry.getValue()
+            );
+        }
+
+        // Total inventory value
+        double total = 0;
+
+        for (Product p : products) {
+            total += p.price * p.quantity;
+        }
+
+        System.out.println("\nTotal Inventory Value = Rs. " + total);
+
+        sc.close();
+    }
+}
+
+
+
+
+## Theory: Product Sorting and Inventory Management Using Java Collections
+
+1\. Aim: To develop a Product Inventory System using Java Collections Framework for sorting, storing, and managing product records.
+
+2\. Product Class: Stores product ID, name, price, and quantity.
+
+3\. Comparable Interface: The `Product` class implements `Comparable<Product>` to define the natural ordering of products.
+
+4\. `compareTo()` Method: Overrides the `compareTo()` method to sort products by price in ascending order.
+
+5\. ArrayList: Stores product objects dynamically and accepts product details from the user.
+
+6\. TreeSet: Stores products in sorted order according to the specified comparison logic.
+
+7\. Comparator: Defines custom sorting logic to arrange products alphabetically by name, ignoring case. If names are equal, products are sorted by ID.
+
+8\. PriorityQueue: Arranges products according to quantity, displaying the product with the lowest quantity first.
+
+9\. HashMap: Stores products using product ID as the key and the corresponding product object as the value.
+
+10\. Map.Entry: Used to access and display the key-value pairs stored in the `HashMap`.
+
+11\. Input Validation: Checks that the product price is positive and the quantity is non-negative.
+
+12\. Total Inventory Value: Calculates the total inventory value using the formula:
+
+Total Value = Sum of (Product Price × Quantity)
+
+13\. Enhanced For Loop: Iterates through collections to display sorted products and calculate the inventory value.
+
+14\. Lambda Expressions: Used to define custom comparison logic for the `Comparator` and `PriorityQueue`.
+
+15\. Conclusion: The program demonstrates `ArrayList`, `TreeSet`, `Comparable`, `Comparator`, `PriorityQueue`, `HashMap`, lambda expressions, sorting, and inventory value calculation in Java.
+
+Important note: `TreeSet` treats two products as equivalent when the comparator returns `0`. Therefore, products with the same price may result in one product being omitted from `priceSet`, even if their IDs differ.

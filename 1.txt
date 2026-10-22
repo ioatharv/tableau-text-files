@@ -1,0 +1,226 @@
+
+import java.util.Scanner;
+
+class LibraryManagement {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int[] id = new int[10];
+        String[] title = new String[10];
+        String[] author = new String[10];
+        int[] quantity = new int[10];
+
+        int count = 0;
+        int choice, bookId, index, newQuantity;
+
+        do {
+            System.out.println("\n===== LIBRARY MANAGEMENT =====");
+            System.out.println("1. Add Book");
+            System.out.println("2. Display All Books");
+            System.out.println("3. Search Book");
+            System.out.println("4. Issue Book");
+            System.out.println("5. Return Book");
+            System.out.println("6. Update Quantity");
+            System.out.println("7. Exit");
+            System.out.print("Enter your choice: ");
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+
+                case 1:
+                    if (count == 10) {
+                        System.out.println("Library is full!");
+                        break;
+                    }
+
+                    System.out.print("Enter Book ID: ");
+                    bookId = sc.nextInt();
+                    sc.nextLine();
+
+                    index = -1;
+                    for (int i = 0; i < count; i++) {
+                        if (id[i] == bookId) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index != -1) {
+                        System.out.println("Book ID already exists!");
+                    } else {
+                        System.out.print("Enter Book Title: ");
+                        title[count] = sc.nextLine();
+
+                        System.out.print("Enter Author Name: ");
+                        author[count] = sc.nextLine();
+
+                        System.out.print("Enter Quantity: ");
+                        newQuantity = sc.nextInt();
+
+                        if (newQuantity < 0) {
+                            System.out.println("Quantity cannot be negative!");
+                            break;
+                        }
+
+                        id[count] = bookId;
+                        quantity[count] = newQuantity;
+                        count++;
+
+                        System.out.println("Book added successfully!");
+                    }
+                    break;
+
+                case 2:
+                    if (count == 0) {
+                        System.out.println("No books available.");
+                    } else {
+                        System.out.println("\nID\tTitle\t\tAuthor\t\tQuantity");
+                        for (int i = 0; i < count; i++) {
+                            System.out.println(id[i] + "\t"
+                                    + title[i] + "\t\t"
+                                    + author[i] + "\t\t"
+                                    + quantity[i]);
+                        }
+                    }
+                    break;
+
+                case 3:
+                    System.out.print("Enter Book ID to search: ");
+                    bookId = sc.nextInt();
+
+                    index = -1;
+                    for (int i = 0; i < count; i++) {
+                        if (id[i] == bookId) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index == -1) {
+                        System.out.println("Book not found!");
+                    } else {
+                        System.out.println("Book ID: " + id[index]);
+                        System.out.println("Title: " + title[index]);
+                        System.out.println("Author: " + author[index]);
+                        System.out.println("Quantity: " + quantity[index]);
+                    }
+                    break;
+
+                case 4:
+                    System.out.print("Enter Book ID to issue: ");
+                    bookId = sc.nextInt();
+
+                    index = -1;
+                    for (int i = 0; i < count; i++) {
+                        if (id[i] == bookId) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index == -1) {
+                        System.out.println("Book not found!");
+                    } else if (quantity[index] > 0) {
+                        quantity[index]--;
+                        System.out.println("Book issued successfully!");
+                    } else {
+                        System.out.println("Book is out of stock!");
+                    }
+                    break;
+
+                case 5:
+                    System.out.print("Enter Book ID to return: ");
+                    bookId = sc.nextInt();
+
+                    index = -1;
+                    for (int i = 0; i < count; i++) {
+                        if (id[i] == bookId) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index == -1) {
+                        System.out.println("Book not found!");
+                    } else {
+                        quantity[index]++;
+                        System.out.println("Book returned successfully!");
+                    }
+                    break;
+
+                case 6:
+                    System.out.print("Enter Book ID to update: ");
+                    bookId = sc.nextInt();
+
+                    index = -1;
+                    for (int i = 0; i < count; i++) {
+                        if (id[i] == bookId) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index == -1) {
+                        System.out.println("Book not found!");
+                    } else {
+                        System.out.print("Enter new quantity: ");
+                        newQuantity = sc.nextInt();
+
+                        if (newQuantity < 0) {
+                            System.out.println("Quantity cannot be negative!");
+                        } else {
+                            quantity[index] = newQuantity;
+                            System.out.println("Quantity updated!");
+                        }
+                    }
+                    break;
+
+                case 7:
+                    System.out.println("Exiting Library Management System.");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice! Try again.");
+            }
+
+        } while (choice != 7);
+
+        sc.close();
+    }
+}
+
+
+
+
+## Theory: Library Management System (Points)
+
+1\. Aim: To develop a menu-driven Library Management System using Java arrays and a `switch` statement.
+
+2\. Programming Language: Java.
+
+3\. Scanner Class: Used to accept input from the user.
+
+4\. Arrays: Four arrays are used to store Book ID, title, author name, and quantity.
+
+5\. Maximum Capacity: The library can store a maximum of 10 books.
+
+6\. Add Book: Adds a new book after checking that the Book ID is unique and the quantity is non-negative.
+
+7\. Display Books: Displays all available book records in tabular format.
+
+8\. Search Book: Searches for a book using its ID and displays its details.
+
+9\. Issue Book: Decreases the book quantity by one if stock is available.
+
+10\. Return Book: Increases the quantity of the returned book by one.
+
+11\. Update Quantity: Allows the user to modify the quantity of an existing book.
+
+12\. Switch Statement: Executes the selected operation according to the user's menu choice.
+
+13\. Do-While Loop: Repeats the menu until the user selects Exit (option 7).
+
+14\. Validation: Checks for duplicate IDs, unavailable books, negative quantities, and invalid menu choices.
+
+15\. Conclusion: The program demonstrates the use of arrays, loops, conditional statements, searching, and switch-case in Java for managing library records.

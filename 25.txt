@@ -1,0 +1,147 @@
+
+import java.sql.*;
+import java.util.Scanner;
+
+public class HospitalPatientUpdate {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        String url = "jdbc:mysql://localhost:3306/hospital";
+        String user = "root";
+        String password = "YOUR_PASSWORD";
+
+        try (Connection con =
+                 DriverManager.getConnection(url, user, password)) {
+
+            System.out.print("Enter Patient ID: ");
+            int id = sc.nextInt();
+            sc.nextLine();
+
+            // Search patient by ID
+            String search =
+                "SELECT * FROM patient WHERE id = ?";
+
+            try (PreparedStatement ps =
+                     con.prepareStatement(search)) {
+
+                ps.setInt(1, id);
+
+                try (ResultSet rs = ps.executeQuery()) {
+
+                    if (rs.next()) {
+
+                        System.out.println("\nPatient Found!");
+                        System.out.println("ID: " + rs.getInt("id"));
+                        System.out.println("Name: " + rs.getString("name"));
+                        System.out.println("Age: " + rs.getInt("age"));
+                        System.out.println("Gender: " + rs.getString("gender"));
+                        System.out.println("Disease: " + rs.getString("disease"));
+                        System.out.println("Appointment: " +
+                                           rs.getString("appointment"));
+
+                    } else {
+                        System.out.println("Patient not found!");
+                        return;
+                    }
+                }
+            }
+
+            // Update disease
+            System.out.print("\nEnter new disease: ");
+            String disease = sc.nextLine();
+
+            if (disease.trim().isEmpty()) {
+                System.out.println("Disease cannot be empty!");
+                return;
+            }
+
+            String update =
+                "UPDATE patient SET disease = ? WHERE id = ?";
+
+            try (PreparedStatement ps =
+                     con.prepareStatement(update)) {
+
+                ps.setString(1, disease);
+                ps.setInt(2, id);
+
+                int rows = ps.executeUpdate();
+
+                System.out.println("Rows affected: " + rows);
+
+                if (rows > 0) {
+                    System.out.println("Disease updated successfully!");
+
+                    // Display updated record
+                    String updated =
+                        "SELECT * FROM patient WHERE id = ?";
+
+                    try (PreparedStatement ps2 =
+                             con.prepareStatement(updated)) {
+
+                        ps2.setInt(1, id);
+
+                        try (ResultSet rs2 = ps2.executeQuery()) {
+                            if (rs2.next()) {
+                                System.out.println("\nUpdated Patient Record:");
+                                System.out.println("ID: " + rs2.getInt("id"));
+                                System.out.println("Name: " + rs2.getString("name"));
+                                System.out.println("Age: " + rs2.getInt("age"));
+                                System.out.println("Gender: " + rs2.getString("gender"));
+                                System.out.println("Disease: " + rs2.getString("disease"));
+                                System.out.println("Appointment: " +
+                                                   rs2.getString("appointment"));
+                            }
+                        }
+                    }
+                } else {
+                    System.out.println("No record updated.");
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Database Error: " + e.getMessage());
+        }
+
+        sc.close();
+    }
+}
+
+
+
+
+
+## Theory: Hospital Patient Search and Update Using JDBC
+
+1\. This Java program is used to search for a patient by ID and update the patient's disease information using JDBC and MySQL.
+
+2\. The `Scanner` class is used to accept the patient ID and new disease information from the user.
+
+3\. The `DriverManager.getConnection()` method establishes a connection with the MySQL database named `hospital`.
+
+4\. The `Connection` interface represents the connection between the Java application and the database.
+
+5\. The `PreparedStatement` interface is used to execute SQL queries securely with parameters.
+
+6\. The `SELECT` query searches for a patient using the entered ID.
+
+7\. The `ResultSet` interface stores the records returned by the SELECT query.
+
+8\. The `rs.next()` method checks whether the patient record exists. If found, the complete patient details are displayed.
+
+9\. If the patient is not found, the program displays "Patient not found!" and terminates.
+
+10\. The program accepts the new disease information and checks that it is not empty using `trim().isEmpty()`.
+
+11\. The `UPDATE` query modifies the disease column of the patient whose ID matches the entered ID.
+
+12\. The `executeUpdate()` method executes the UPDATE query and returns the number of affected rows.
+
+13\. If the update is successful, the program displays a success message and retrieves the updated patient record.
+
+14\. The `try-with-resources` statement automatically closes database resources such as `Connection`, `PreparedStatement`, and `ResultSet`.
+
+15\. The `SQLException` exception is handled using a `catch` block to display database errors.
+
+Conclusion: This program demonstrates how to search for a patient, validate input, update disease information, and display the updated record using Java JDBC and MySQL.

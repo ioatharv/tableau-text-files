@@ -1,0 +1,134 @@
+
+class BookingSystem {
+    int availableSeats;
+
+    BookingSystem(int seats) {
+        availableSeats = seats;
+    }
+
+    synchronized void bookSeats(String name, int seats) {
+        System.out.println(name + " wants " + seats + " seats.");
+
+        if (seats <= availableSeats) {
+            availableSeats = availableSeats - seats;
+
+            System.out.println(name + ": Booking Successful!");
+            System.out.println("Seats booked: " + seats);
+            System.out.println("Seats remaining: " + availableSeats);
+        } else {
+            System.out.println(name + ": Booking Failed!");
+            System.out.println("Not enough seats available.");
+        }
+
+        System.out.println();
+    }
+}
+
+// Odd-numbered users use Thread
+class BookingThread extends Thread {
+    BookingSystem system;
+    String name;
+    int seats;
+
+    BookingThread(BookingSystem system, String name, int seats) {
+        this.system = system;
+        this.name = name;
+        this.seats = seats;
+    }
+
+    public void run() {
+        system.bookSeats(name, seats);
+    }
+}
+
+// Even-numbered users use Runnable
+class BookingRunnable implements Runnable {
+    BookingSystem system;
+    String name;
+    int seats;
+
+    BookingRunnable(BookingSystem system, String name, int seats) {
+        this.system = system;
+        this.name = name;
+        this.seats = seats;
+    }
+
+    public void run() {
+        system.bookSeats(name, seats);
+    }
+}
+
+public class MovieBooking {
+    public static void main(String[] args) throws InterruptedException {
+
+        BookingSystem system = new BookingSystem(10);
+
+        String[] names = {"Amit", "Rahul", "Priya", "Sneha"};
+        int[] seats = {3, 4, 2, 5};
+
+        Thread[] threads = new Thread[names.length];
+
+        for (int i = 0; i < names.length; i++) {
+
+            if ((i + 1) % 2 != 0) {
+                // Odd-numbered users: Thread
+                threads[i] = new BookingThread(
+                    system, names[i], seats[i]
+                );
+            } else {
+                // Even-numbered users: Runnable
+                BookingRunnable task = new BookingRunnable(
+                    system, names[i], seats[i]
+                );
+
+                threads[i] = new Thread(task);
+            }
+
+            threads[i].start();
+        }
+
+        // Wait for all threads to finish
+        for (int i = 0; i < threads.length; i++) {
+            threads[i].join();
+        }
+
+        System.out.println("All bookings completed.");
+        System.out.println("Final available seats: "
+                           + system.availableSeats);
+    }
+}
+
+
+
+
+## Theory: Concurrent Movie Booking System Using Multithreading in Java
+
+1\. Aim: To develop a Movie Booking System using multithreading and synchronization in Java.
+
+2\. BookingSystem Class: Maintains the total number of available seats and manages seat booking requests.
+
+3\. Constructor: Initializes the available seats when the `BookingSystem` object is created.
+
+4\. Synchronized Method: The `synchronized` keyword in `bookSeats()` allows only one thread at a time to execute the booking method on the same object.
+
+5\. Seat Booking: Checks whether the requested number of seats is available before confirming the booking.
+
+6\. BookingThread Class: Extends the `Thread` class and performs booking operations by overriding the `run()` method.
+
+7\. BookingRunnable Class: Implements the `Runnable` interface and defines booking operations in the `run()` method.
+
+8\. Thread Creation: The program creates multiple threads to represent different users booking movie seats simultaneously.
+
+9\. Thread and Runnable: Odd-numbered users use the `Thread` subclass, while even-numbered users use the `Runnable` interface.
+
+10\. Start Method: The `start()` method starts each thread and allows its `run()` method to execute independently.
+
+11\. Join Method: The `join()` method makes the main thread wait until all booking threads finish execution.
+
+12\. Concurrency: Multiple users can request seats concurrently, but synchronization prevents simultaneous modification of the shared seat count.
+
+13\. Conditional Statements: The `if-else` statement checks seat availability and determines whether a booking succeeds or fails.
+
+14\. Final Seat Count: After all threads complete, the program displays the final number of available seats.
+
+15\. Conclusion: The program demonstrates multithreading, the `Thread` class, the `Runnable` interface, synchronization, concurrency, and thread coordination using `join()` in Java.

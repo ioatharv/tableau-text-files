@@ -1,0 +1,145 @@
+
+class Employee {
+    int id;
+    String name, department;
+    int yearsOfService;
+    double basicSalary;
+
+    Employee(int id, String name, String department,
+             int years, double salary) {
+        this.id = id;
+        this.name = name;
+        this.department = department;
+        this.yearsOfService = years;
+        this.basicSalary = salary;
+    }
+
+    double calculateSalary() {
+        return basicSalary + (basicSalary * 0.20)
+                + (basicSalary * 0.05 * yearsOfService);
+    }
+
+    void display() {
+        System.out.println("Employee ID: " + id);
+        System.out.println("Name: " + name);
+        System.out.println("Department: " + department);
+        System.out.println("Years of Service: " + yearsOfService);
+        System.out.println("Basic Salary: " + basicSalary);
+        System.out.println("Calculated Salary: " + calculateSalary());
+    }
+}
+
+class Manager extends Employee {
+    int teamSize;
+    String managementLevel;
+
+    Manager(int id, String name, String department,
+            int years, double salary, int teamSize,
+            String managementLevel) {
+        super(id, name, department, years, salary);
+        this.teamSize = teamSize;
+        this.managementLevel = managementLevel;
+    }
+
+    @Override
+    double calculateSalary() {
+        return super.calculateSalary() + (teamSize * 1000);
+    }
+
+    @Override
+    void display() {
+        super.display();
+        System.out.println("Team Size: " + teamSize);
+        System.out.println("Management Level: " + managementLevel);
+    }
+}
+
+class SeniorManager extends Manager {
+    int numberOfTeams;
+    String projectType;
+
+    SeniorManager(int id, String name, String department,
+                  int years, double salary, int teamSize,
+                  String level, int numberOfTeams,
+                  String projectType) {
+        super(id, name, department, years, salary,
+              teamSize, level);
+        this.numberOfTeams = numberOfTeams;
+        this.projectType = projectType;
+    }
+
+    @Override
+    double calculateSalary() {
+        return super.calculateSalary() + (numberOfTeams * 5000);
+    }
+
+    @Override
+    void display() {
+        super.display();
+        System.out.println("Number of Teams: " + numberOfTeams);
+        System.out.println("Project Type: " + projectType);
+    }
+
+    void allocateBudget() {
+        double budget = numberOfTeams * 100000;
+        System.out.println("Allocated Budget: Rs. " + budget);
+    }
+}
+
+public class EmployeeManagement {
+    public static void main(String[] args) {
+
+        Employee e = new Employee(
+            101, "Amit", "HR", 2, 30000);
+
+        Manager m = new Manager(
+            102, "Rahul", "IT", 3, 40000, 5, "Middle");
+
+        SeniorManager s = new SeniorManager(
+            103, "Priya", "IT", 5, 50000,
+            8, "Senior", 3, "Software Development");
+
+        System.out.println("=== EMPLOYEE ===");
+        e.display();
+
+        System.out.println("\n=== MANAGER ===");
+        m.display();
+
+        System.out.println("\n=== SENIOR MANAGER ===");
+        s.display();
+        s.allocateBudget();
+    }
+}
+
+
+
+
+## Theory: Employee Management System Using Multilevel Inheritance in Java
+
+1\. Aim: To develop an Employee Management System using multilevel inheritance and method overriding in Java.
+
+2\. Employee Class: The base class stores employee ID, name, department, years of service, and basic salary.
+
+3\. Parameterized Constructor: Initializes employee details using constructor parameters.
+
+4\. Salary Calculation: The `calculateSalary()` method calculates salary by adding a 20% allowance and a 5% increment for each year of service to the basic salary.
+
+5\. Display Method: The `display()` method displays employee details and calculated salary.
+
+6\. Manager Class: Inherits the `Employee` class and stores team size and management level.
+
+7\. SeniorManager Class: Inherits the `Manager` class and stores the number of teams and project type.
+
+8\. Multilevel Inheritance: The program follows the inheritance chain `Employee → Manager → SeniorManager`.
+
+9\. `super` Keyword: Calls the parent class constructor and methods.
+
+10\. Method Overriding: The `Manager` and `SeniorManager` classes override the `calculateSalary()` and `display()` methods to provide specialized functionality.
+
+11\. Additional Salary: A manager receives ₹1,000 per team member, while a senior manager receives an additional ₹5,000 per team.
+
+12\. Budget Allocation: The `allocateBudget()` method calculates the budget as ₹1,00,000 per team.
+
+13\. Objects: Objects of `Employee`, `Manager`, and `SeniorManager` are created to demonstrate different levels of inheritance.
+
+14\. Conclusion: The program demonstrates classes, objects, constructors, multilevel inheritance, method overriding, the `super` keyword, and code reusability in Java.

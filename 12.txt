@@ -1,0 +1,174 @@
+package login;
+
+public class User {
+    String username;
+    String password;
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+}
+
+package login;
+
+public class LoginService {
+    User user = new User("admin", "1234");
+
+    public boolean verify(String username, String password) {
+        return user.username.equals(username)
+                && user.password.equals(password);
+    }
+}
+
+
+
+
+package train;
+
+public class TrainEntity {
+    String name, source, destination;
+    int sleeper, ac;
+
+    public TrainEntity(String name, String source,
+                       String destination, int sleeper, int ac) {
+        this.name = name;
+        this.source = source;
+        this.destination = destination;
+        this.sleeper = sleeper;
+        this.ac = ac;
+    }
+
+    public void display() {
+        System.out.println("Train: " + name);
+        System.out.println("Source: " + source);
+        System.out.println("Destination: " + destination);
+        System.out.println("Sleeper Seats: " + sleeper);
+        System.out.println("AC Seats: " + ac);
+        System.out.println("----------------------");
+    }
+}
+
+
+
+
+package train;
+
+import java.util.ArrayList;
+
+public class TrainService {
+    ArrayList<TrainEntity> trains = new ArrayList<>();
+
+    public TrainService() {
+        trains.add(new TrainEntity(
+                "Deccan Express", "Pune", "Mumbai", 50, 20));
+
+        trains.add(new TrainEntity(
+                "Vidarbha Express", "Nagpur", "Mumbai", 40, 15));
+
+        trains.add(new TrainEntity(
+                "Intercity Express", "Pune", "Nagpur", 30, 10));
+    }
+
+    public void search(String source, String destination) {
+        boolean found = false;
+
+        for (TrainEntity t : trains) {
+            if (t.source.equalsIgnoreCase(source)
+                    && t.destination.equalsIgnoreCase(destination)) {
+                t.display();
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No train found!");
+        }
+    }
+}
+
+
+
+
+package mainapp;
+
+import java.util.Scanner;
+import login.LoginService;
+import train.TrainService;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        LoginService login = new LoginService();
+        boolean success = false;
+
+        for (int i = 1; i <= 3; i++) {
+            System.out.print("Enter username: ");
+            String username = sc.nextLine();
+
+            System.out.print("Enter password: ");
+            String password = sc.nextLine();
+
+            if (login.verify(username, password)) {
+                System.out.println("Login Successful!");
+                success = true;
+                break;
+            } else {
+                System.out.println("Invalid login!");
+                System.out.println("Attempts left: " + (3 - i));
+            }
+        }
+
+        if (success) {
+            TrainService service = new TrainService();
+
+            System.out.print("Enter source: ");
+            String source = sc.nextLine();
+
+            System.out.print("Enter destination: ");
+            String destination = sc.nextLine();
+
+            service.search(source, destination);
+        } else {
+            System.out.println("Maximum attempts reached!");
+        }
+
+        sc.close();
+    }
+}
+
+
+
+
+## Theory: Railway Reservation and Train Search System Using Packages in Java
+
+1\. Aim: To develop a Railway Train Search System using Java packages, classes, and objects.
+
+2\. Packages: The program is divided into three packages: `login`, `train`, and `mainapp` to organize the code.
+
+3\. User Class: Stores the username and password required for login authentication.
+
+4\. LoginService Class: Verifies the entered username and password using the `verify()` method.
+
+5\. Login Authentication: The user gets a maximum of three attempts to enter valid login credentials.
+
+6\. TrainEntity Class: Stores train details such as train name, source, destination, sleeper seats, and AC seats.
+
+7\. Parameterized Constructor: Initializes the user and train details when objects are created.
+
+8\. Display Method: The `display()` method displays the train name, source, destination, and available seats.
+
+9\. TrainService Class: Manages train records using an `ArrayList<TrainEntity>`.
+
+10\. ArrayList: Stores multiple train objects dynamically.
+
+11\. Train Search: The `search()` method searches for trains according to the source and destination entered by the user.
+
+12\. Case-Insensitive Comparison: The `equalsIgnoreCase()` method compares source and destination without considering uppercase or lowercase letters.
+
+13\. Main Class: Controls the program flow, accepts user input, performs login authentication, and starts train searching after successful login.
+
+14\. Conditional Statements and Loops: The `for` loop manages login attempts, while `if-else` statements check login success and train availability.
+
+15\. Conclusion: The program demonstrates packages, classes, objects, constructors, `ArrayList`, methods, login authentication, searching, and modular programming in Java.

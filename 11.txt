@@ -1,0 +1,179 @@
+
+import java.util.Scanner;
+
+interface Vehicle {
+    void start();
+    void stop();
+    double calculateRentalCost(int days);
+    void displayDetails();
+}
+
+class Car implements Vehicle {
+    int id;
+    String model;
+    double rate;
+
+    Car(int id, String model, double rate) {
+        this.id = id;
+        this.model = model;
+        this.rate = rate;
+    }
+
+    public void start() {
+        System.out.println("Car started");
+    }
+
+    public void stop() {
+        System.out.println("Car stopped");
+    }
+
+    public double calculateRentalCost(int days) {
+        return rate * days;
+    }
+
+    public void displayDetails() {
+        System.out.println("Vehicle ID: " + id);
+        System.out.println("Model: " + model);
+        System.out.println("Type: Car");
+        System.out.println("Rate per day: Rs. " + rate);
+    }
+}
+
+class Bike implements Vehicle {
+    int id;
+    String model;
+    double rate;
+
+    Bike(int id, String model, double rate) {
+        this.id = id;
+        this.model = model;
+        this.rate = rate;
+    }
+
+    public void start() {
+        System.out.println("Bike started");
+    }
+
+    public void stop() {
+        System.out.println("Bike stopped");
+    }
+
+    public double calculateRentalCost(int days) {
+        return rate * days;
+    }
+
+    public void displayDetails() {
+        System.out.println("Vehicle ID: " + id);
+        System.out.println("Model: " + model);
+        System.out.println("Type: Bike");
+        System.out.println("Rate per day: Rs. " + rate);
+    }
+}
+
+class Bus implements Vehicle {
+    int id;
+    String model;
+    double rate;
+
+    Bus(int id, String model, double rate) {
+        this.id = id;
+        this.model = model;
+        this.rate = rate;
+    }
+
+    public void start() {
+        System.out.println("Bus started");
+    }
+
+    public void stop() {
+        System.out.println("Bus stopped");
+    }
+
+    public double calculateRentalCost(int days) {
+        return rate * days;
+    }
+
+    public void displayDetails() {
+        System.out.println("Vehicle ID: " + id);
+        System.out.println("Model: " + model);
+        System.out.println("Type: Bus");
+        System.out.println("Rate per day: Rs. " + rate);
+    }
+}
+
+public class VehicleRentalSystem {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        Vehicle[] vehicles = {
+            new Car(101, "Swift", 2000),
+            new Bike(102, "Pulsar", 800),
+            new Bus(103, "Volvo", 5000)
+        };
+
+        int days;
+
+        do {
+            System.out.print("Enter rental days (1 or more): ");
+            days = sc.nextInt();
+
+            if (days <= 0) {
+                System.out.println("Invalid days! Try again.");
+            }
+        } while (days <= 0);
+
+        for (Vehicle v : vehicles) {
+            System.out.println("\n--------------------");
+
+            v.displayDetails();
+            v.start();
+
+            System.out.println("Rental Days: " + days);
+            System.out.println("Total Rental Cost: Rs. "
+                    + v.calculateRentalCost(days));
+
+            v.stop();
+        }
+
+        sc.close();
+    }
+}
+
+
+
+
+## Theory: Vehicle Rental System Using Interface in Java
+
+1\. Aim: To develop a Vehicle Rental System using interfaces and runtime polymorphism in Java.
+
+2\. Vehicle Interface: Defines four methods: `start()`, `stop()`, `calculateRentalCost()`, and `displayDetails()`.
+
+3\. Car Class: Implements the `Vehicle` interface and stores car ID, model, and rental rate.
+
+4\. Bike Class: Implements the `Vehicle` interface and stores bike ID, model, and rental rate.
+
+5\. Bus Class: Implements the `Vehicle` interface and stores bus ID, model, and rental rate.
+
+6\. Parameterized Constructor: Initializes vehicle details when an object is created.
+
+7\. Interface Implementation: The `implements` keyword is used to provide implementations of all interface methods.
+
+8\. Start and Stop Methods: The `start()` and `stop()` methods display messages indicating the vehicle's status.
+
+9\. Rental Cost Calculation: The `calculateRentalCost()` method calculates the total rental cost using the formula:
+
+Total Rental Cost = Rate per Day × Number of Days
+
+10\. Display Details: The `displayDetails()` method displays the vehicle ID, model, type, and daily rental rate.
+
+11\. Array of Objects: A `Vehicle` array stores objects of `Car`, `Bike`, and `Bus`.
+
+12\. Scanner Class: Accepts the rental duration from the user.
+
+13\. Input Validation: A `do-while` loop ensures that the rental duration is at least one day.
+
+14\. Runtime Polymorphism: The same `Vehicle` reference invokes the appropriate methods for different vehicle objects.
+
+15\. Enhanced For Loop: Iterates through all vehicles and displays their details and rental costs.
+
+16\. Conclusion: The program demonstrates interfaces, classes, objects, constructors, method overriding, runtime polymorphism, loops, and input validation in Java.

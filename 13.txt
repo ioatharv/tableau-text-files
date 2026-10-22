@@ -1,0 +1,289 @@
+
+import java.util.HashMap;
+import java.util.Random;
+import java.util.Scanner;
+
+// Abstract class
+abstract class Reservation {
+    String pnr;
+    String trainName;
+    String passengerName;
+
+    Reservation(String pnr, String trainName, String passengerName) {
+        this.pnr = pnr;
+        this.trainName = trainName;
+        this.passengerName = passengerName;
+    }
+
+    abstract void book();
+    abstract void displayTicket();
+    abstract void cancel();
+}
+
+// Ticket class
+class Ticket extends Reservation {
+    String bookingClass;
+    int seatNumber;
+    String bookingStatus;
+    int age;
+    String phone;
+
+    static HashMap<String, Ticket> bookings = new HashMap<>();
+
+    Ticket(String pnr, String trainName, String passengerName,
+           String bookingClass, int seatNumber, int age, String phone) {
+
+        super(pnr, trainName, passengerName);
+        this.bookingClass = bookingClass;
+        this.seatNumber = seatNumber;
+        this.age = age;
+        this.phone = phone;
+        this.bookingStatus = "Active";
+    }
+
+    void book() {
+        bookings.put(pnr, this);
+        System.out.println("Ticket booked successfully!");
+        System.out.println("Your PNR is: " + pnr);
+    }
+
+    void displayTicket() {
+        System.out.println("\n----- TICKET DETAILS -----");
+        System.out.println("PNR: " + pnr);
+        System.out.println("Train Name: " + trainName);
+        System.out.println("Passenger Name: " + passengerName);
+        System.out.println("Age: " + age);
+        System.out.println("Phone: " + phone);
+        System.out.println("Booking Class: " + bookingClass);
+        System.out.println("Seat Number: " + seatNumber);
+        System.out.println("Status: " + bookingStatus);
+        System.out.println("--------------------------");
+    }
+
+    void cancel() {
+        bookingStatus = "Cancelled";
+        bookings.remove(pnr);
+        System.out.println("Ticket cancelled successfully!");
+    }
+}
+
+// Main class
+public class RailwayBooking {
+    static Scanner sc = new Scanner(System.in);
+    static Random random = new Random();
+
+    // Generate unique six-digit PNR
+    static String generatePNR() {
+        String pnr;
+
+        do {
+            pnr = String.valueOf(100000 + random.nextInt(900000));
+        } while (Ticket.bookings.containsKey(pnr));
+
+        return pnr;
+    }
+
+    static void bookTicket() {
+        try {
+            System.out.print("Enter passenger name: ");
+            String name = sc.nextLine().trim();
+
+            if (name.isEmpty()) {
+                System.out.println("Name cannot be empty!");
+                return;
+            }
+
+            System.out.print("Enter train name: ");
+            String train = sc.nextLine().trim();
+
+            if (train.isEmpty()) {
+                System.out.println("Train name cannot be empty!");
+                return;
+            }
+
+            System.out.print("Enter age: ");
+            String ageInput = sc.nextLine();
+
+            // Wrapper class conversion
+            int age = Integer.valueOf(ageInput);
+
+            if (age < 1 || age > 120) {
+                System.out.println("Invalid age! Enter age from 1 to 120.");
+                return;
+            }
+
+            System.out.print("Enter 10-digit phone number: ");
+            String phone = sc.nextLine();
+
+            if (!phone.matches("[0-9]{10}")) {
+                System.out.println("Phone number must contain exactly 10 digits!");
+                return;
+            }
+
+            // Wrapper class conversion
+            Long.valueOf(phone);
+
+            System.out.print("Enter booking class (Sleeper/AC): ");
+            String bookingClass = sc.nextLine().trim();
+
+            if (bookingClass.isEmpty()) {
+                System.out.println("Booking class cannot be empty!");
+                return;
+            }
+
+            System.out.print("Enter seat number: ");
+            int seat = Integer.parseInt(sc.nextLine());
+
+            if (seat <= 0) {
+                System.out.println("Seat number must be positive!");
+                return;
+            }
+
+            String pnr = generatePNR();
+
+            Ticket ticket = new Ticket(
+                pnr, train, name, bookingClass, seat, age, phone
+            );
+
+            ticket.book();
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number! Please enter valid details.");
+        }
+    }
+
+    static void searchTicket() {
+        System.out.print("Enter PNR: ");
+        String pnr = sc.nextLine().trim();
+
+        Ticket ticket = Ticket.bookings.get(pnr);
+
+        if (ticket != null) {
+            ticket.displayTicket();
+        } else {
+            System.out.println("Ticket not found!");
+        }
+    }
+
+    static void cancelTicket() {
+        System.out.print("Enter PNR to cancel: ");
+        String pnr = sc.nextLine().trim();
+
+        Ticket ticket = Ticket.bookings.get(pnr);
+
+        if (ticket == null) {
+            System.out.println("Ticket not found!");
+            return;
+        }
+
+        ticket.displayTicket();
+
+        System.out.print("Confirm cancellation? (yes/no): ");
+        String confirm = sc.nextLine();
+
+        if (confirm.equalsIgnoreCase("yes")) {
+            ticket.cancel();
+        } else {
+            System.out.println("Cancellation aborted.");
+        }
+    }
+
+    static void displayAllBookings() {
+        if (Ticket.bookings.isEmpty()) {
+            System.out.println("No active bookings available.");
+            return;
+        }
+
+        for (Ticket ticket : Ticket.bookings.values()) {
+            ticket.displayTicket();
+        }
+    }
+
+    public static void main(String[] args) {
+        int choice = 0;
+
+        do {
+            System.out.println("\n===== RAILWAY TICKET SYSTEM =====");
+            System.out.println("1. Book Ticket");
+            System.out.println("2. Search Ticket by PNR");
+            System.out.println("3. Cancel Ticket");
+            System.out.println("4. Display All Active Bookings");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice: ");
+
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+
+                switch (choice) {
+                    case 1:
+                        bookTicket();
+                        break;
+
+                    case 2:
+                        searchTicket();
+                        break;
+
+                    case 3:
+                        cancelTicket();
+                        break;
+
+                    case 4:
+                        displayAllBookings();
+                        break;
+
+                    case 5:
+                        System.out.println("Thank you!");
+                        break;
+
+                    default:
+                        System.out.println("Invalid menu choice!");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid menu number!");
+            }
+
+        } while (choice != 5);
+
+        sc.close();
+    }
+}
+
+
+
+
+## Theory: Railway Ticket Booking System Using Java
+
+1\. Aim: To develop a menu-driven Railway Ticket Booking System using object-oriented programming concepts in Java.
+
+2\. Abstract Class: The `Reservation` class is an abstract class that stores PNR, train name, and passenger name.
+
+3\. Abstract Methods: The `book()`, `displayTicket()`, and `cancel()` methods are declared abstract and implemented in the `Ticket` class.
+
+4\. Inheritance: The `Ticket` class extends the `Reservation` class using the `extends` keyword.
+
+5\. Constructor: The parameterized constructor initializes passenger details, booking class, seat number, age, and phone number.
+
+6\. HashMap: A `HashMap<String, Ticket>` stores ticket records using PNR as the key for quick searching.
+
+7\. PNR Generation: The `Random` class generates a unique six-digit PNR for each active booking.
+
+8\. Book Ticket: The `bookTicket()` method accepts passenger details, validates the input, creates a ticket object, and stores the booking.
+
+9\. Search Ticket: The `searchTicket()` method searches for a ticket using its PNR and displays the details if found.
+
+10\. Cancel Ticket: The `cancelTicket()` method asks for confirmation and removes the ticket from active bookings when cancellation is confirmed.
+
+11\. Display All Bookings: The `displayAllBookings()` method displays all active ticket records stored in the `HashMap`.
+
+12\. Input Validation: The program validates passenger name, train name, age, phone number, booking class, and seat number.
+
+13\. Wrapper Classes: `Integer.valueOf()`, `Long.valueOf()`, and `Integer.parseInt()` convert string input into numeric values.
+
+14\. Exception Handling: The `try-catch` blocks handle invalid numeric inputs using `NumberFormatException`.
+
+15\. Menu-Driven Program: A `do-while` loop and `switch` statement allow users to book, search, cancel, and display tickets until they select Exit.
+
+16\. Conditional Statements: The `if-else` statements check ticket availability, validate details, and confirm cancellation.
+
+17\. Conclusion: The program demonstrates abstraction, inheritance, constructors, collections, random number generation, input validation, exception handling, and menu-driven programming in Java.
